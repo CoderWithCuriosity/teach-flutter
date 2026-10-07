@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flutter Developer Mastery — Full Curriculum</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #0d1016;
+      --bg-base-2: #12151d;
+      --bg-panel: #161a24;
+      --bg-panel-alt: #1c2130;
+      --bg-elevated: #232838;
+      --border: #2c3346;
+      --border-soft: #232938;
+
+      --text-primary: #e9ecf5;
+      --text-secondary: #a3abc4;
+      --text-muted: #68708a;
+
+      --accent-flutter: #54c5f8;
+      --accent-dart: #40c4ff;
+
+      --accent-p1: #54c5f8;
+      --accent-p2: #69f0ae;
+      --accent-p3: #4dd0e1;
+      --accent-p4: #b388ff;
+      --accent-p5: #ffd54f;
+      --accent-p6: #ffab40;
+      --accent-p7: #f48fb1;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+
+      --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-sans);
+      line-height: 1.65;
+      color: var(--text-primary);
+      background:
+        radial-gradient(circle at 10% 4%, rgba(84, 197, 248, 0.09), transparent 42%),
+        radial-gradient(circle at 90% 12%, rgba(179, 136, 255, 0.07), transparent 42%),
+        radial-gradient(circle at 50% 97%, rgba(105, 240, 174, 0.06), transparent 45%),
+        var(--bg-base);
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+
+    a { color: inherit; }
+
+    code {
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 0.88em;
+      color: var(--accent-dart);
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent-flutter);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* HERO */
+    .hero { margin-bottom: 26px; }
+
+    .terminal-window {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 18px;
+      background: var(--bg-base-2);
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .terminal-dots { display: flex; gap: 7px; }
+    .terminal-dots span { width: 11px; height: 11px; border-radius: 50%; display: block; }
+    .terminal-dots span:nth-child(1) { background: #ec6a5e; }
+    .terminal-dots span:nth-child(2) { background: #f4bf4f; }
+    .terminal-dots span:nth-child(3) { background: #61c454; }
+
+    .terminal-tab {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      padding: 4px 12px;
+      background: var(--bg-panel-alt);
+      border-radius: 5px;
+    }
+
+    .terminal-tab.active { color: var(--accent-dart); border: 1px solid var(--border); }
+
+    .terminal-body { padding: 42px 46px 38px; }
+
+    .terminal-comment {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .hero-title {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: clamp(1.7rem, 4vw, 2.7rem);
+      letter-spacing: -0.02em;
+      margin-bottom: 18px;
+    }
+
+    .cursor { display: inline-block; color: var(--accent-flutter); animation: blink 1s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 720px;
+      margin-bottom: 26px;
+    }
+
+    .terminal-line {
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .terminal-line .prompt { color: var(--accent-p2); margin-right: 8px; }
+
+    .terminal-output {
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-bottom: 26px;
+      padding-left: 20px;
+    }
+
+    .phase-chip-row { display: flex; gap: 9px; flex-wrap: wrap; }
+
+    .chip {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--chip-c, var(--border));
+      color: var(--chip-c, var(--text-secondary));
+      background: color-mix(in srgb, var(--chip-c, var(--border)) 12%, transparent);
+    }
+
+    .chip.p1 { --chip-c: var(--accent-p1); }
+    .chip.p2 { --chip-c: var(--accent-p2); }
+    .chip.p3 { --chip-c: var(--accent-p3); }
+    .chip.p4 { --chip-c: var(--accent-p4); }
+    .chip.p5 { --chip-c: var(--accent-p5); }
+    .chip.p6 { --chip-c: var(--accent-p6); }
+    .chip.p7 { --chip-c: var(--accent-p7); }
+
+    /* NOTE PANEL */
+    .note-panel {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: var(--bg-panel-alt);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent-flutter);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin-bottom: 28px;
+    }
+
+    .note-panel svg { flex-shrink: 0; margin-top: 3px; color: var(--accent-flutter); }
+
+    .note-panel strong { display: block; font-size: 1rem; margin-bottom: 8px; color: var(--text-primary); }
+    .note-panel p { font-size: 0.93rem; color: var(--text-secondary); }
+    .note-panel .mono-inline { font-family: var(--font-mono); color: var(--accent-dart); }
+
+    /* LAYOUT */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 34px;
+    }
+
+    h2 {
+      font-family: var(--font-mono);
+      font-size: 1.32rem;
+      color: var(--text-primary);
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    h3 {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      color: var(--text-primary);
+      margin: 28px 0 12px;
+    }
+
+    p { margin-bottom: 14px; color: var(--text-secondary); }
+
+    ul, ol { margin-left: 22px; margin-bottom: 18px; }
+    li { margin-bottom: 8px; color: var(--text-secondary); }
+    li strong { color: var(--text-primary); }
+
+    /* INFO BOXES */
+    .info-box {
+      background: var(--bg-panel-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 22px 24px;
+      margin: 18px 0;
+    }
+
+    .info-box h4 {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      color: var(--accent-flutter);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .info-box.amber h4 { color: var(--accent-p5); }
+
+    /* PHASE BLOCKS */
+    .phase {
+      background: var(--bg-panel-alt);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--phase-c, var(--border));
+      border-radius: var(--radius-md);
+      padding: 26px 28px;
+      margin-bottom: 20px;
+    }
+
+    .phase[data-phase="p1"] { --phase-c: var(--accent-p1); }
+    .phase[data-phase="p2"] { --phase-c: var(--accent-p2); }
+    .phase[data-phase="p3"] { --phase-c: var(--accent-p3); }
+    .phase[data-phase="p4"] { --phase-c: var(--accent-p4); }
+    .phase[data-phase="p5"] { --phase-c: var(--accent-p5); }
+    .phase[data-phase="p6"] { --phase-c: var(--accent-p6); }
+    .phase[data-phase="p7"] { --phase-c: var(--accent-p7); }
+
+    .phase-heading {
+      font-family: var(--font-mono);
+      font-size: 1.02rem;
+      color: var(--phase-c, var(--text-primary));
+      margin-bottom: 10px;
+    }
+
+    .phase-heading .num { color: var(--text-muted); }
+
+    .phase-desc {
+      font-size: 0.94rem;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+    }
+
+    .phase-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 14px 0 6px;
+    }
+
+    /* LEVEL CARDS */
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .level-card {
+      display: block;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--phase-c, var(--border));
+      border-radius: var(--radius-sm);
+      padding: 15px 17px;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .level-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--phase-c, var(--accent-flutter));
+      background: var(--bg-elevated);
+    }
+
+    .level-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .level-number {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.18rem;
+      color: var(--phase-c, var(--text-primary));
+    }
+
+    .file-ext {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      color: var(--phase-c, var(--text-muted));
+      border: 1px solid var(--phase-c, var(--border));
+      border-radius: 4px;
+      padding: 2px 7px;
+    }
+
+    .level-name {
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .level-desc {
+      font-size: 0.79rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 9px;
+    }
+
+    .level-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+
+    .level-status.completed { background: rgba(105, 240, 174, 0.14); color: var(--accent-p2); }
+    .level-status.locked { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
+    .level-status.unlocked { background: rgba(84, 197, 248, 0.14); color: var(--accent-p1); }
+    .level-status svg { width: 11px; height: 11px; }
+
+    .callout {
+      background: color-mix(in srgb, var(--phase-c, var(--accent-flutter)) 9%, transparent);
+      border: 1px solid color-mix(in srgb, var(--phase-c, var(--accent-flutter)) 45%, transparent);
+      border-radius: var(--radius-sm);
+      padding: 13px 17px;
+      margin-top: 16px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .callout strong { color: var(--phase-c, var(--accent-flutter)); }
+
+    /* SIDEBAR */
+    .sidebar-stat {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.92rem;
+      margin-bottom: 11px;
+      color: var(--text-secondary);
+    }
+
+    .sidebar-stat strong {
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      text-align: right;
+    }
+
+    .progress-track {
+      font-family: var(--font-mono);
+      background: var(--bg-base-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      height: 28px;
+      overflow: hidden;
+      margin: 14px 0 22px;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-p1), var(--accent-p4));
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .progress-track span {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--text-primary);
+    }
+
+    .btn-row { display: flex; flex-direction: column; gap: 10px; margin: 18px 0 6px; }
+
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      text-align: center;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary { background: var(--accent-flutter); color: #071018; font-weight: 600; }
+    .btn-primary:hover { filter: brightness(1.1); }
+
+    .btn-ghost { background: transparent; border-color: var(--border); color: var(--text-secondary); }
+    .btn-ghost:hover { border-color: var(--text-muted); color: var(--text-primary); }
+
+    .feature-row {
+      display: flex;
+      gap: 13px;
+      align-items: flex-start;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .feature-row:last-child { border-bottom: none; }
+
+    .feature-icon {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-elevated);
+      color: var(--feat-c, var(--accent-flutter));
+    }
+
+    .feature-row strong { display: block; color: var(--text-primary); font-size: 0.92rem; }
+    .feature-row .sub { font-size: 0.83rem; color: var(--text-muted); line-height: 1.5; }
+
+    .stack-block {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      background: var(--bg-base-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      margin-bottom: 8px;
+      line-height: 1.75;
+    }
+
+    .stack-block .key { color: var(--accent-flutter); }
+    .stack-block .str { color: var(--accent-p2); }
+    .stack-block .punc { color: var(--text-muted); }
+    .stack-block .kw { color: var(--accent-p4); }
+    .stack-block .cls { color: var(--accent-p5); }
+
+    .check-list { margin-left: 0; list-style: none; }
+
+    .check-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 9px;
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+    }
+
+    .check-list svg { flex-shrink: 0; color: var(--accent-p2); }
+
+    /* CTA */
+    .cta-section {
+      text-align: center;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      padding: 52px 34px;
+      border-radius: var(--radius-lg);
+      margin-top: 32px;
+    }
+
+    .cta-section h2 { border: none; justify-content: center; }
+    .cta-section p { max-width: 620px; margin: 0 auto 26px; }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      background: var(--accent-flutter);
+      color: #071018;
+      font-weight: 600;
+      padding: 16px 32px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+
+    .cta-btn:hover { filter: brightness(1.1); }
+
+    @media (max-width: 900px) {
+      .content-grid { grid-template-columns: 1fr; display: block; }
+      .terminal-body { padding: 30px 24px; }
+      .level-grid { grid-template-columns: 1fr; }
+      .panel { padding: 24px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- ===================== HERO ===================== -->
+    <header class="hero">
+      <div class="terminal-window">
+        <div class="terminal-bar">
+          <div class="terminal-dots"><span></span><span></span><span></span></div>
+          <div class="terminal-tab active">flutter_curriculum/</div>
+          <div class="terminal-tab">README.md</div>
+        </div>
+        <div class="terminal-body">
+          <p class="terminal-comment">// flutter_developer_mastery</p>
+          <h1 class="hero-title"><span id="typedTitle"></span><span class="cursor">_</span></h1>
+          <p class="hero-sub">70 levels. Every level a brand-new Flutter project. Every level a wireframe you
+            rebuild from scratch. No starter files, no partial code — you create the project, write the widgets,
+            match the target.</p>
+          <div class="terminal-line"><span class="prompt">$</span>flutter create level_01_hello_flutter</div>
+          <p class="terminal-output">Creating project... ✓ 70 levels across 7 phases — all listed below</p>
+          <div class="phase-chip-row">
+            <span class="chip p1">01 · First App</span>
+            <span class="chip p2">02 · Screens & Nav</span>
+            <span class="chip p3">03 · Row / Column</span>
+            <span class="chip p4">04 · Dart OOP</span>
+            <span class="chip p5">05 · State</span>
+            <span class="chip p6">06 · Lists & Data</span>
+            <span class="chip p7">07 · Full App</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===================== HOW IT WORKS ===================== -->
+    <section class="note-panel">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <path d="M3 9h18" />
+        <path d="M9 21V9" />
+      </svg>
+      <div>
+        <strong>Every level is a fresh Flutter project. You build it from zero.</strong>
+        <p>Each level gives you a <span class="mono-inline">wireframe.png</span>, a list of permitted widgets, and
+          the exact <span class="mono-inline">flutter create</span> command. You build the UI to match the
+          wireframe. When it matches, you submit and unlock the next level. No skipping.</p>
+      </div>
+    </section>
+
+    <div class="content-grid">
+
+      <!-- ===================== MAIN ===================== -->
+      <div class="panel">
+
+        <h2>All 70 levels</h2>
+        <p>Every level is listed below. Each card shows the level number, the project name, exactly what you build,
+          and the status.</p>
+
+        <div class="info-box">
+          <h4>How a level works</h4>
+          <ul>
+            <li><strong>Wireframe</strong> — the exact screen layout you must reproduce</li>
+            <li><strong>Widget list</strong> — only widgets taught so far are permitted</li>
+            <li><strong>Run command</strong> — the exact <code>flutter create level_XX_name</code> to start</li>
+            <li><strong>Submit</strong> — matches the wireframe → next level unlocks</li>
+          </ul>
+        </div>
+
+        <!-- ============ PHASE 1 ============ -->
+        <div class="phase" data-phase="p1">
+          <p class="phase-heading"><span class="num">01 /</span> Your First Flutter App — Levels 1–10</p>
+          <p class="phase-desc">Install Flutter, learn <code>main()</code> / <code>runApp()</code>, build your
+            first <code>MaterialApp</code>, and get comfortable with hot reload. By Level 10 you can build a static
+            profile card from a wireframe.</p>
+          <div class="phase-meta">
+            <span class="chip p1">MaterialApp</span>
+            <span class="chip p1">Scaffold</span>
+            <span class="chip p1">AppBar</span>
+            <span class="chip p1">Center</span>
+            <span class="chip p1">Text</span>
+            <span class="chip p1">TextStyle</span>
+            <span class="chip p1">hot reload</span>
+          </div>
+
+          <div class="level-grid">
+
+            <a href="level1.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">1</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Hello, Flutter</div>
+              <div class="level-desc">Run <code>flutter create</code> for the first time. Replace
+                <code>main.dart</code> with a bare <code>runApp</code> that shows a single <code>Text</code>
+                widget. Get "Hello, Flutter" on screen.</div>
+              <span class="level-status unlocked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/></svg>Available</span>
+            </a>
+
+            <a href="level2.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">2</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Center + Text</div>
+              <div class="level-desc">Center the text horizontally and vertically inside the screen. Learn that
+                <code>runApp</code> needs a widget, and <code>Center</code> is a widget that takes a
+                <code>child</code>.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level3.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">3</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">MaterialApp Wrapper</div>
+              <div class="level-desc">Wrap your <code>Center</code> in a <code>MaterialApp</code>. Add a
+                <code>title</code> and a <code>theme</code>. Notice the app now has Material styling and a debug
+                banner.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level4.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">4</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Scaffold + AppBar</div>
+              <div class="level-desc">Add a <code>Scaffold</code> with an <code>AppBar</code>. The title appears
+                in the top bar. Your body becomes the <code>Center</code> from before. Match the wireframe with a
+                title bar.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level5.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">5</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">TextStyle — Size</div>
+              <div class="level-desc">Introduce <code>TextStyle</code>. Make the same text large. Then make it
+                small. Match two wireframes showing the two sizes side by side.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level6.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">6</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">TextStyle — Weight & Color</div>
+              <div class="level-desc">Add <code>FontWeight.bold</code> and a custom color to your text. Match the
+                wireframe showing three different styled lines.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level7.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">7</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Icon Widget</div>
+              <div class="level-desc">Add an <code>Icon</code> above your text. Use an icon from
+                <code>Icons</code> (e.g. <code>Icons.home</code>). Learn that icons are widgets too.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level8.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">8</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">SizedBox Spacing</div>
+              <div class="level-desc">Space out your Icon and Text with <code>SizedBox(height: 20)</code>. Match
+                the wireframe where there's clear vertical breathing room.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level9.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">9</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Container + Background</div>
+              <div class="level-desc">Wrap a text in a <code>Container</code> with a background color and padding.
+                Match the wireframe showing a colored box behind text.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level10.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">10</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Static Profile Card</div>
+              <div class="level-desc">Combine everything: icon, name, role text, background container. Match the
+                wireframe of a simple profile card. Phase 1 capstone.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+          </div>
+          <div class="callout"><strong>Wireframe focus:</strong> single-screen static layouts. Each wireframe is one
+            phone frame. By Level 10 you combine five widgets into one card.</div>
+        </div>
+
+        <!-- ============ PHASE 2 ============ -->
+        <div class="phase" data-phase="p2">
+          <p class="phase-heading"><span class="num">02 /</span> Buttons, Screens & Navigation — Levels 11–20</p>
+          <p class="phase-desc">Add interactivity with <code>ElevatedButton</code>, then create multiple screens
+            and navigate between them. Learn the navigation stack, how to push and pop, and how named routes
+            work.</p>
+          <div class="phase-meta">
+            <span class="chip p2">ElevatedButton</span>
+            <span class="chip p2">TextButton</span>
+            <span class="chip p2">OutlinedButton</span>
+            <span class="chip p2">Navigator.push</span>
+            <span class="chip p2">MaterialPageRoute</span>
+            <span class="chip p2">Named routes</span>
+            <span class="chip p2">onPressed</span>
+          </div>
+
+          <div class="level-grid">
+
+            <a href="level11.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">11</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Your First Button</div>
+              <div class="level-desc">Add an <code>ElevatedButton</code> below your text. <code>onPressed</code>
+                prints to the console. Match the wireframe showing text + button.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level12.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">12</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Button Styles</div>
+              <div class="level-desc">Stack three button types: <code>ElevatedButton</code>,
+                <code>TextButton</code>, <code>OutlinedButton</code>. Match the wireframe showing all three
+                visually distinct.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level13.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">13</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Second Screen Widget</div>
+              <div class="level-desc">Create a second screen as a separate <code>StatelessWidget</code> class.
+                Don't navigate yet — just define it and render it directly to see it works.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level14.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">14</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Navigator.push</div>
+              <div class="level-desc">Wire the button to <code>Navigator.push</code> with a
+                <code>MaterialPageRoute</code>. Tap → screen 2 appears with a back button. Match the two-frame
+                wireframe.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level15.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">15</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Navigator.pop</div>
+              <div class="level-desc">Add a button on screen 2 that calls <code>Navigator.pop</code> to return to
+                screen 1. Learn the navigation stack.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level16.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">16</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Named Routes</div>
+              <div class="level-desc">Refactor to use <code>routes:</code> in <code>MaterialApp</code>. Navigate
+                with <code>Navigator.pushNamed</code>. The <code>initialRoute</code> is your home.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level17.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">17</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Pass Data to a Screen</div>
+              <div class="level-desc">Create a screen whose constructor takes a <code>String</code> name. Pass
+                "Alice" from the button. The second screen greets Alice by name.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level18.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">18</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">3-Screen Flow</div>
+              <div class="level-desc">Home → Details → Settings. Each screen has a forward button and the standard
+                back button. Match the three-frame wireframe with arrows.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level19.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">19</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">IconButton in AppBar</div>
+              <div class="level-desc">Add an <code>IconButton</code> to the <code>AppBar</code> as an
+                <code>action</code>. Tapping it navigates to a new screen. Match the wireframe showing an icon in
+                the top-right.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level20.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">20</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Menu App Capstone</div>
+              <div class="level-desc">A 4-screen menu-driven app: Home with four buttons, each pushing to its own
+                screen. Match the full flow wireframe. Phase 2 capstone.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+          </div>
+          <div class="callout"><strong>Wireframe focus:</strong> 2–4 phone frames side by side with arrows showing
+            which button leads where. You also get a navigation-tree diagram.</div>
+        </div>
+
+        <!-- ============ PHASE 3 ============ -->
+        <div class="phase" data-phase="p3">
+          <p class="phase-heading"><span class="num">03 /</span> Row, Column & Alignment — Levels 21–30</p>
+          <p class="phase-desc">The heart of Flutter layout. Master <code>Row</code>, <code>Column</code>,
+            <code>mainAxisAlignment</code>, and <code>crossAxisAlignment</code>. By Level 30 you know all nine
+            alignment combinations by reflex.</p>
+          <div class="phase-meta">
+            <span class="chip p3">Row</span>
+            <span class="chip p3">Column</span>
+            <span class="chip p3">MainAxisAlignment</span>
+            <span class="chip p3">CrossAxisAlignment</span>
+            <span class="chip p3">Expanded</span>
+            <span class="chip p3">Padding</span>
+            <span class="chip p3">SizedBox</span>
+          </div>
+
+          <div class="level-grid">
+
+            <a href="level21.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">21</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Column Basics</div>
+              <div class="level-desc">Stack three <code>Text</code> widgets vertically in a <code>Column</code>.
+                Default alignment. Match the wireframe showing three stacked lines.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level22.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">22</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Row Basics</div>
+              <div class="level-desc">Three <code>Text</code> widgets side by side in a <code>Row</code>. Notice
+                they hug the left. Match the horizontal wireframe.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level23.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">23</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">MainAxisAlignment — start/center/end</div>
+              <div class="level-desc">Three wireframes. Same Column, same content, but the main axis alignment
+                changes: <code>.start</code>, <code>.center</code>, <code>.end</code>.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level24.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">24</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">MainAxisAlignment — spaceBetween/Evenly/Around</div>
+              <div class="level-desc">Three more wireframes. Learn how the three space-distribution values differ
+                visually. This is the one students mix up most.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level25.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">25</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">CrossAxisAlignment — start/center/end/stretch</div>
+              <div class="level-desc">Four wireframes. Same Row, but cross-axis alignment changes. Notice
+                <code>.stretch</code> is different — it fills the perpendicular space.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level26.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">26</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Nested Row inside Column</div>
+              <div class="level-desc">A Column with a heading Text, then a Row of two Texts below. Match the
+                wireframe with a title and a two-column row.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level27.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">27</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Expanded Widget</div>
+              <div class="level-desc">Two texts in a Row where one takes 2/3 and the other 1/3 via
+                <code>Expanded(flex:)</code>. Match the proportional wireframe.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level28.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">28</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Padding Widget</div>
+              <div class="level-desc">Wrap your Row in a <code>Padding</code> with
+                <code>EdgeInsets.all(24)</code>. Match the wireframe where content is inset from the edges.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level29.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">29</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">9-Position Grid</div>
+              <div class="level-desc">A 3×3 grid where each cell shows text at a different main+cross alignment
+                combination. Nine panels in one screen. Prove you know all nine.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level30.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">30</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Layout Capstone — Receipt</div>
+              <div class="level-desc">Build a receipt layout: header Row, item Rows with Expanded, footer Row with
+                total. Match the receipt wireframe. Phase 3 capstone.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+          </div>
+          <div class="callout"><strong>Wireframe focus:</strong> a 3×3 grid of phone frames for the alignment
+            levels, then single-frame layouts combining everything. You'll build nine variations of the same
+            screen.</div>
+        </div>
+
+        <!-- ============ PHASE 4 ============ -->
+        <div class="phase" data-phase="p4">
+          <p class="phase-heading"><span class="num">04 /</span> Dart OOP — Levels 31–40</p>
+          <p class="phase-desc">Now that you can lay out widgets, learn the Dart language underneath them. Classes,
+            constructors, fields, methods, <code>var</code> / <code>late</code> / <code>const</code> /
+            <code>final</code>, data types, <code>List</code>, and <code>Map</code>.</p>
+          <div class="phase-meta">
+            <span class="chip p4">class</span>
+            <span class="chip p4">constructor</span>
+            <span class="chip p4">fields</span>
+            <span class="chip p4">methods</span>
+            <span class="chip p4">var / final / const / late</span>
+            <span class="chip p4">String / int / double / bool</span>
+            <span class="chip p4">List</span>
+            <span class="chip p4">Map</span>
+          </div>
+
+          <div class="level-grid">
+
+            <a href="level31.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">31</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Your First Class</div>
+              <div class="level-desc">Write a <code>Person</code> class with <code>name</code> and
+                <code>age</code> fields. Instantiate it in <code>main()</code> and render the fields as Text.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level32.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">32</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Constructors</div>
+              <div class="level-desc">Add a constructor to <code>Person</code>. Create two instances with different
+                values. Render both on screen side by side.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level33.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">33</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Methods on a Class</div>
+              <div class="level-desc">Add a <code>greeting()</code> method that returns a String. Call it and
+                render the result. Classes can do things, not just hold data.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level34.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">34</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">var vs final vs const vs late</div>
+              <div class="level-desc">Four examples side by side on one screen. Change each to see what the compiler
+                allows. Learn when to use each keyword.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level35.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">35</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Data Types</div>
+              <div class="level-desc">Declare a <code>String</code>, <code>int</code>, <code>double</code>,
+                <code>bool</code>. Render all four on screen. Learn the type system.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level36.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">36</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Lists — Basics</div>
+              <div class="level-desc">Create a <code>List&lt;String&gt;</code> of five names. Render each as a
+                Text widget in a Column. Manual, no ListView yet.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level37.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">37</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Lists — .map()</div>
+              <div class="level-desc">Render the same list using <code>names.map((n) =&gt; Text(n)).toList()</code>.
+                Learn functional iteration inside a widget tree.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level38.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">38</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">List of Objects</div>
+              <div class="level-desc">A <code>List&lt;Person&gt;</code> with three people. Render each as a Row
+                with name and age. Combines lists + classes + layout.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level39.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">39</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Maps</div>
+              <div class="level-desc">A <code>Map&lt;String, int&gt;</code> of scores. Render each key-value pair
+                as a Row with the key on the left and value on the right.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+            <a href="level40.html" class="level-card">
+              <div class="level-card-top"><span class="level-number">40</span><span class="file-ext">PROJECT</span></div>
+              <div class="level-name">Class Capstone — Student Roster</div>
+              <div class="level-desc">A <code>Student</code> class with name, grade, and a
+                <code>Map&lt;String, int&gt;</code> of scores. Render a roster. Phase 4 capstone.</div>
+              <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+            </a>
+
+          </div>
+          <div class="callout"><strong>Wireframe focus:</strong> simple screens, but the content now comes from
+            Dart data structures. You'll see a "data → widget" diagram beside each wireframe.</div>
+        </div>
+
+      </div>
+
+      <!-- ===================== SIDEBAR ===================== -->
+      <aside class="panel">
+        <h2>Your progress</h2>
+        <div class="sidebar-stat"><span>Completed</span><strong><span id="completedCount">0</span> / 70</strong></div>
+        <div class="sidebar-stat"><span>Current level</span><strong id="currentLevel">Not started</strong></div>
+        <div class="sidebar-stat"><span>Current phase</span><strong id="currentPhase">—</strong></div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+          <span id="progressLabel">0%</span>
+        </div>
+
+        <div class="btn-row">
+          <a href="#" class="btn btn-primary" id="continue" style="display:none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="6 3 20 12 6 21 6 3" />
+            </svg>
+            Continue
+          </a>
+          <a href="level1.html" class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="6 3 20 12 6 21 6 3" />
+            </svg>
+            Start Level 1
+          </a>
+          <a href="#" class="btn btn-ghost" onclick="resetProgress(event)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            Reset progress
+          </a>
+        </div>
+
+        <h2 style="margin-top:32px;">Quick links</h2>
+
+        <div class="feature-row">
+          <div class="feature-icon" style="--feat-c:var(--accent-p2);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+          </div>
+          <div><strong>Start learning</strong>
+            <div class="sub"><a href="level1.html">Level 1 — Hello, Flutter</a></div>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon" style="--feat-c:var(--accent-p1);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="M3 9h18" />
+            </svg>
+          </div>
+          <div><strong>Wireframe system</strong>
+            <div class="sub">Every level = one wireframe + one fresh project</div>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon" style="--feat-c:var(--accent-p5);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          </div>
+          <div><strong>Pro tip</strong>
+            <div class="sub">Keep <code>flutter run</code> open. Hot reload (press <code>r</code>) is your best
+              debugging tool.</div>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon" style="--feat-c:var(--accent-p4);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z" />
+            </svg>
+          </div>
+          <div><strong>Fast track</strong>
+            <div class="sub">Already know Dart? Jump to Level 41.</div>
+          </div>
+        </div>
+
+        <h3>Widgets you'll master</h3>
+        <pre class="stack-block"><span class="kw">final</span> curriculum <span class="punc">=</span> <span class="punc">{</span>
+  <span class="str">"p1_first_app"</span><span class="punc">:</span> [<span class="cls">MaterialApp</span>, <span class="cls">Scaffold</span>, <span class="cls">Center</span>, <span class="cls">Text</span>],
+  <span class="str">"p2_screens"</span><span class="punc">:</span> [<span class="cls">ElevatedButton</span>, <span class="cls">Navigator</span>, <span class="cls">routes</span>],
+  <span class="str">"p3_layout"</span><span class="punc">:</span> [<span class="cls">Row</span>, <span class="cls">Column</span>, <span class="cls">Expanded</span>, <span class="cls">Padding</span>],
+  <span class="str">"p4_dart"</span><span class="punc">:</span> [<span class="kw">class</span>, <span class="cls">List</span>, <span class="cls">Map</span>, <span class="kw">final</span>],
+  <span class="str">"p5_state"</span><span class="punc">:</span> [<span class="cls">StatelessWidget</span>, <span class="cls">StatefulWidget</span>, <span class="cls">setState</span>],
+  <span class="str">"p6_data"</span><span class="punc">:</span> [<span class="cls">ListView</span>, <span class="cls">ListView.builder</span>, <span class="cls">Card</span>],
+  <span class="str">"p7_full"</span><span class="punc">:</span> [<span class="cls">Form</span>, <span class="cls">SnackBar</span>, <span class="cls">Dialog</span>]
+<span class="punc">};</span></pre>
+
+        <h3>What you'll build</h3>
+        <ul class="check-list">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>Static single-screen apps</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>Multi-screen navigation flows</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>All 9 alignment combinations</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>Classes, Lists, Maps in Dart</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>Stateful interactions (counter, form)</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>Scrollable lists from dynamic data</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>A complete to-do / notes app</li>
+        </ul>
+
+        <h3>Stuck on a level?</h3>
+        <ul style="font-size:0.9rem;">
+          <li>Re-read the wireframe — what's the widget tree?</li>
+          <li>Break the screen into Row / Column first</li>
+          <li>Use <code>flutter run</code> + hot reload to iterate fast</li>
+          <li>Open Flutter DevTools and inspect the widget tree</li>
+          <li>Only peek at the example after a real attempt</li>
+        </ul>
+      </aside>
+
+    </div>
+
+    <!-- ===================== PHASES 5-7 ===================== -->
+    <div class="panel" style="margin-bottom: 24px;">
+
+      <!-- ============ PHASE 5 ============ -->
+      <div class="phase" data-phase="p5" style="margin-bottom: 22px;">
+        <p class="phase-heading"><span class="num">05 /</span> Stateless & Stateful Widgets — Levels 41–50</p>
+        <p class="phase-desc">Split your UI into reusable <code>StatelessWidget</code> classes and interactive
+          <code>StatefulWidget</code> classes. Learn what <code>setState</code> actually does, why it triggers a
+          rebuild, and how <code>initState</code> and <code>dispose</code> fit into the lifecycle.</p>
+        <div class="phase-meta">
+          <span class="chip p5">StatelessWidget</span>
+          <span class="chip p5">StatefulWidget</span>
+          <span class="chip p5">setState</span>
+          <span class="chip p5">initState</span>
+          <span class="chip p5">dispose</span>
+          <span class="chip p5">TextField</span>
+          <span class="chip p5">Switch</span>
+          <span class="chip p5">Checkbox</span>
+        </div>
+
+        <div class="level-grid">
+
+          <a href="level41.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">41</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">StatelessWidget Class</div>
+            <div class="level-desc">Extract your profile card from Level 10 into a <code>StatelessWidget</code>
+              class. Pass data through the constructor.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level42.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">42</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Reusable Card Widget</div>
+            <div class="level-desc">A <code>InfoCard</code> widget that takes a title and subtitle. Render three
+              instances with different data. Reusability in action.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level43.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">43</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Why Stateful?</div>
+            <div class="level-desc">Build a screen that shows a number. Try to change it with a plain variable.
+              See it fail. This level teaches the <em>problem</em> stateful widgets solve.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level44.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">44</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">StatefulWidget Counter</div>
+            <div class="level-desc">Your first <code>StatefulWidget</code>. A number and a "+1" button. Tap →
+              number increments. Match the counter wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level45.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">45</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">setState Explained</div>
+            <div class="level-desc">Same counter, but with two buttons (−1 and +1). Learn that every mutation must
+              be inside <code>setState</code>. Match the two-button wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level46.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">46</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Toggle Color App</div>
+            <div class="level-desc">A screen whose background changes color on button tap. Two states → two
+              colors. Match the before/after wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level47.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">47</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">TextField + Button</div>
+            <div class="level-desc">A <code>TextField</code> and a button. Type a name, press the button, and the
+              greeting text below updates. Your first text input.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level48.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">48</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Checkbox</div>
+            <div class="level-desc">A <code>Checkbox</code> with a label. When checked, show additional text below.
+              Learn boolean state.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level49.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">49</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Switch Toggles</div>
+            <div class="level-desc">A settings screen with three independent <code>Switch</code> tiles. Each
+              toggles independently. Match the settings wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level50.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">50</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">State Capstone — Interactive Quiz</div>
+            <div class="level-desc">A 3-question quiz: question text, two buttons, score updates as you answer.
+              State management combines everything. Phase 5 capstone.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+        </div>
+        <div class="callout"><strong>Wireframe focus:</strong> each frame shows a before-state and after-state side
+          by side. The wireframe visually communicates "what setState changes."</div>
+      </div>
+
+      <!-- ============ PHASE 6 ============ -->
+      <div class="phase" data-phase="p6" style="margin-bottom: 22px;">
+        <p class="phase-heading"><span class="num">06 /</span> Lists, Cards & Dynamic Data — Levels 51–60</p>
+        <p class="phase-desc">Render collections of data with <code>ListView</code> and
+          <code>ListView.builder</code>. Combine a <code>List&lt;YourClass&gt;</code> with
+          <code>ListTile</code> and <code>Card</code> to build a real contact list and a product catalog.</p>
+        <div class="phase-meta">
+          <span class="chip p6">ListView</span>
+          <span class="chip p6">ListView.builder</span>
+          <span class="chip p6">ListTile</span>
+          <span class="chip p6">Card</span>
+          <span class="chip p6">CircleAvatar</span>
+          <span class="chip p6">Divider</span>
+        </div>
+
+        <div class="level-grid">
+
+          <a href="level51.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">51</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">ListView Basics</div>
+            <div class="level-desc">A hard-coded <code>ListView</code> with three <code>Text</code> children.
+              Notice the automatic scroll. Match the scrolling wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level52.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">52</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">ListTile</div>
+            <div class="level-desc">Replace plain Text with <code>ListTile</code> widgets. Each has a
+              <code>title</code> and <code>subtitle</code>. Match the standard list wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level53.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">53</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Divider Between Items</div>
+            <div class="level-desc">Add <code>Divider()</code> between list tiles. Learn how to interleave widgets
+              in a list. Match the wireframe with visible separators.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level54.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">54</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">ListView.builder</div>
+            <div class="level-desc">Take a <code>List&lt;String&gt;</code> of 20 names and render with
+              <code>ListView.builder</code>. Learn the <code>itemBuilder</code> callback and
+              <code>itemCount</code>.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level55.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">55</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">List of Custom Objects</div>
+            <div class="level-desc">A <code>List&lt;Person&gt;</code> of five people. Render each as a
+              <code>ListTile</code> with the person's name and age. Data-driven list.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level56.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">56</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Card + CircleAvatar</div>
+            <div class="level-desc">Wrap each list item in a <code>Card</code> with a leading
+              <code>CircleAvatar</code>. Match the contact-list wireframe with avatars.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level57.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">57</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Contact List App</div>
+            <div class="level-desc">A full contact list: <code>Contact</code> class with name, phone, avatar. Five
+              contacts, each a Card. Match the polished wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level58.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">58</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Tap to Detail</div>
+            <div class="level-desc">Wrap each ListTile in a <code>GestureDetector</code> or use
+              <code>onTap</code>. Tap a contact → push to a detail screen with their info.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level59.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">59</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Product Catalog</div>
+            <div class="level-desc">A <code>Product</code> class with name, price, image placeholder. Render a
+              ListView of product cards. Match the e-commerce wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level60.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">60</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Data Capstone — Filterable Catalog</div>
+            <div class="level-desc">Add a search bar on top of the product list. Typing filters the list in real
+              time. Combines state + lists + data. Phase 6 capstone.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+        </div>
+        <div class="callout"><strong>Wireframe focus:</strong> scrollable list frames with varied item heights,
+          plus a zoomed-in view of one item so you can see its internal Row/Column structure.</div>
+      </div>
+
+      <!-- ============ PHASE 7 ============ -->
+      <div class="phase" data-phase="p7">
+        <p class="phase-heading"><span class="num">07 /</span> Full App Build — Levels 61–70</p>
+        <p class="phase-desc">Everything comes together. Build a complete to-do / notes app with four screens: a
+          home list, a detail view, an add/edit form with validation, and a settings screen. This is your
+          portfolio piece.</p>
+        <div class="phase-meta">
+          <span class="chip p7">Form</span>
+          <span class="chip p7">GlobalKey&lt;FormState&gt;</span>
+          <span class="chip p7">validator</span>
+          <span class="chip p7">SnackBar</span>
+          <span class="chip p7">showDialog</span>
+          <span class="chip p7">Dismissible</span>
+        </div>
+
+        <div class="level-grid">
+
+          <a href="level61.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">61</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">App Architecture</div>
+            <div class="level-desc">Sketch the app's folder structure. Create the <code>Task</code> model class
+              with id, title, description, done. Build a skeleton app.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level62.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">62</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Task Home Screen</div>
+            <div class="level-desc">A <code>ListView.builder</code> of tasks. Each task shows a checkbox, title,
+              and a chevron. Match the home wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level63.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">63</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Toggle Task Done</div>
+            <div class="level-desc">Tapping the checkbox toggles the task's <code>done</code> state and updates
+              the UI. Strikethrough when done. Match the two-state wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level64.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">64</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Task Detail Screen</div>
+            <div class="level-desc">Tap a task → detail screen showing full description, checkbox, and delete
+              button. Pass the Task through the route.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level65.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">65</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Add Task Screen</div>
+            <div class="level-desc">A form with title + description <code>TextFormField</code> and a Save button.
+              On save, append to the list and pop back. Match the add-form wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level66.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">66</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Form Validation</div>
+            <div class="level-desc">Use <code>GlobalKey&lt;FormState&gt;</code> and a <code>validator</code> to
+              require a non-empty title. Show error text. Match the error-state wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level67.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">67</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Edit Task</div>
+            <div class="level-desc">Reuse the form for editing. Pre-fill with existing task data. On save, update
+              the task. Match the edit-form wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level68.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">68</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Delete Task + Confirmation</div>
+            <div class="level-desc">Delete button opens a <code>showDialog</code> confirming the action. On
+              confirm, remove the task and show a <code>SnackBar</code>. Match the dialog wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level69.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">69</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Swipe to Dismiss</div>
+            <div class="level-desc">Wrap each task tile in a <code>Dismissible</code>. Swipe left to delete with
+              a red background. Match the swipe-reveal wireframe.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+          <a href="level70.html" class="level-card">
+            <div class="level-card-top"><span class="level-number">70</span><span class="file-ext">PROJECT</span></div>
+            <div class="level-name">Full To-Do App — Final</div>
+            <div class="level-desc">All four screens working together: list, detail, add/edit, settings. Empty
+              state, snackbars, dialogs, swipe-delete. The complete app. You're done.</div>
+            <span class="level-status locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked</span>
+          </a>
+
+        </div>
+        <div class="callout"><strong>Wireframe focus:</strong> a full user-flow diagram showing all four screens
+          plus transitions (push, pop, dialog, snackbar). This is the map for your final project.</div>
+      </div>
+
+    </div>
+
+    <!-- ===================== CTA ===================== -->
+    <section class="cta-section">
+      <h2>Ready to start Level 1?</h2>
+      <p>Level 1 is a single centered <code>Text</code> widget inside a bare <code>runApp</code>. It sounds
+        trivial — but you'll set up a real Flutter project, run it, and hot-reload it. Everything else builds on
+        that foundation.</p>
+      <a href="level1.html" class="cta-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+        Start Level 1 — Hello, Flutter
+      </a>
+    </section>
+
+  </div>
+
+  <script>
+    (function typeTitle() {
+      const el = document.getElementById('typedTitle');
+      const text = 'Flutter Developer Mastery';
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion) { el.textContent = text; return; }
+      let i = 0;
+      function step() {
+        el.textContent = text.slice(0, i);
+        i++;
+        if (i <= text.length) setTimeout(step, 35);
+      }
+      step();
+    })();
+
+    const TOTAL_LEVELS = 70;
+
+    const PHASES = [
+      { name: 'First App',            max: 10 },
+      { name: 'Screens & Navigation', max: 20 },
+      { name: 'Row / Column Layout',  max: 30 },
+      { name: 'Dart OOP',             max: 40 },
+      { name: 'Stateless & Stateful', max: 50 },
+      { name: 'Lists & Dynamic Data', max: 60 },
+      { name: 'Full App Build',       max: 70 }
+    ];
+
+    function loadProgress() {
+      const progress = JSON.parse(localStorage.getItem('flutterProgress')) || {};
+      let completed = Object.values(progress).filter(v => v === true).length;
+
+      const cont = document.getElementById('continue');
+      if (completed > 0) {
+        cont.style.display = 'inline-flex';
+        cont.href = `level${completed + 1}.html`;
+      } else {
+        cont.style.display = 'none';
+      }
+
+      document.getElementById('completedCount').textContent = completed;
+      document.getElementById('currentLevel').textContent =
+        completed > 0 ? `Level ${completed + 1}` : 'Not started';
+
+      let phaseName = '—';
+      for (const p of PHASES) {
+        if (completed < p.max) { phaseName = p.name; break; }
+      }
+      document.getElementById('currentPhase').textContent = phaseName;
+
+      const percent = Math.round((completed / TOTAL_LEVELS) * 100);
+      document.getElementById('progressFill').style.width = percent + '%';
+      document.getElementById('progressLabel').textContent = percent + '%';
+
+      document.querySelectorAll('.level-card').forEach(card => {
+        const levelNum = parseInt(card.querySelector('.level-number').textContent, 10);
+        const statusEl = card.querySelector('.level-status');
+        if (!statusEl) return;
+
+        if (progress[`level${levelNum}`]) {
+          statusEl.className = 'level-status completed';
+          statusEl.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Completed';
+        } else {
+          const prevKey = `level${levelNum - 1}`;
+          const isUnlocked = levelNum === 1 || progress[prevKey];
+          if (isUnlocked) {
+            statusEl.className = 'level-status unlocked';
+            statusEl.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/></svg>Available';
+          } else {
+            statusEl.className = 'level-status locked';
+            statusEl.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked';
+          }
+        }
+      });
+    }
+
+    function resetProgress(e) {
+      e.preventDefault();
+      if (confirm('Reset all Flutter progress? This cannot be undone.')) {
+        localStorage.removeItem('flutterProgress');
+        loadProgress();
+        alert('Progress has been reset.');
+      }
+    }
+
+    function canAccessLevel(levelNum) {
+      if (levelNum === 1) return true;
+      const progress = JSON.parse(localStorage.getItem('flutterProgress')) || {};
+      return progress[`level${levelNum - 1}`] === true;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      loadProgress();
+
+      document.querySelectorAll('.level-card').forEach(card => {
+        card.addEventListener('click', function (e) {
+          const levelNum = parseInt(this.querySelector('.level-number').textContent, 10);
+          if (!canAccessLevel(levelNum)) {
+            e.preventDefault();
+            alert(`Complete Level ${levelNum - 1} first to unlock this level.`);
+            return false;
+          }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>
