@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battle Layout 3 — Flutter Mastery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-base:#0d1016; --bg-base-2:#12151d; --bg-panel:#161a24;
+    --bg-panel-alt:#1c2130; --bg-elevated:#232838;
+    --border:#2c3346; --border-soft:#232938;
+    --text-primary:#e9ecf5; --text-secondary:#a3abc4; --text-muted:#68708a;
+    --accent-flutter:#54c5f8; --accent-dart:#40c4ff;
+    --accent-p1:#54c5f8; --accent-p2:#69f0ae; --accent-p3:#4dd0e1;
+    --accent-p4:#b388ff; --accent-p5:#ffd54f; --accent-p6:#ffab40; --accent-p7:#f48fb1;
+    --radius-sm:6px; --radius-md:10px; --radius-lg:16px;
+    --font-mono:'JetBrains Mono','Courier New',monospace;
+    --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:var(--font-sans); line-height:1.65; color:var(--text-primary);
+    background:
+      radial-gradient(circle at 10% 4%, rgba(105,240,174,.09), transparent 42%),
+      radial-gradient(circle at 90% 12%, rgba(84,197,248,.07), transparent 42%),
+      radial-gradient(circle at 50% 97%, rgba(179,136,255,.06), transparent 45%),
+      var(--bg-base);
+    min-height:100vh;
+  }
+  .page{max-width:1280px;margin:0 auto;padding:32px 20px 64px;}
+  a{color:inherit;}
+  code{
+    font-family:var(--font-mono); background:rgba(255,255,255,.06);
+    padding:2px 7px; border-radius:4px; font-size:.88em; color:var(--accent-dart);
+  }
+  :focus-visible{outline:2px solid var(--accent-flutter);outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+
+  .ic-svg{width:1em;height:1em;display:inline-block;vertical-align:-0.125em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+  /* TOP NAV */
+  .top-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+  .back-link{
+    font-family:var(--font-mono); font-size:.85rem; color:var(--text-muted);
+    text-decoration:none; display:inline-flex; align-items:center; gap:6px; transition:color .15s;
+  }
+  .back-link:hover{color:var(--text-primary);}
+  .level-tag{
+    font-family:var(--font-mono); font-size:.78rem; color:var(--accent-p2);
+    background:rgba(105,240,174,.1); padding:4px 14px; border-radius:20px;
+    border:1px solid rgba(105,240,174,.3);
+  }
+
+  /* HERO */
+  .hero{margin-bottom:26px;}
+  .terminal-window{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:var(--radius-lg); overflow:hidden;
+    box-shadow:0 24px 70px rgba(0,0,0,.5);
+  }
+  .terminal-bar{
+    display:flex; align-items:center; gap:14px; padding:13px 18px;
+    background:var(--bg-base-2); border-bottom:1px solid var(--border-soft);
+  }
+  .terminal-dots{display:flex;gap:7px;}
+  .terminal-dots span{width:11px;height:11px;border-radius:50%;display:block;}
+  .terminal-dots span:nth-child(1){background:#ec6a5e;}
+  .terminal-dots span:nth-child(2){background:#f4bf4f;}
+  .terminal-dots span:nth-child(3){background:#61c454;}
+  .terminal-tab{
+    font-family:var(--font-mono); font-size:.78rem; color:var(--text-muted);
+    padding:4px 12px; background:var(--bg-panel-alt); border-radius:5px;
+  }
+  .terminal-tab.active{color:var(--accent-dart);border:1px solid var(--border);}
+  .terminal-body{padding:42px 46px 38px;}
+  .terminal-comment{font-family:var(--font-mono);font-size:.85rem;color:var(--text-muted);margin-bottom:14px;}
+  .hero-title{
+    font-family:var(--font-mono); font-weight:700;
+    font-size:clamp(1.7rem,4vw,2.7rem); letter-spacing:-.02em; margin-bottom:18px;
+  }
+  .cursor{display:inline-block;color:var(--accent-p2);animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .hero-sub{font-size:1.05rem;color:var(--text-secondary);max-width:720px;margin-bottom:26px;}
+  .terminal-line{font-family:var(--font-mono);font-size:.92rem;color:var(--text-secondary);margin-bottom:6px;}
+  .terminal-line .prompt{color:var(--accent-p2);margin-right:8px;}
+  .terminal-output{
+    font-family:var(--font-mono); font-size:.86rem; color:var(--text-muted);
+    margin-bottom:26px; padding-left:20px;
+  }
+
+  /* PANEL */
+  .panel{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:var(--radius-lg); padding:34px; margin-bottom:24px;
+  }
+  h2{
+    font-family:var(--font-mono); font-size:1.32rem; color:var(--text-primary);
+    margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid var(--border-soft);
+  }
+  h3{
+    font-family:var(--font-mono); font-size:1.05rem; color:var(--text-primary);
+    margin:28px 0 12px;
+  }
+  p{margin-bottom:14px;color:var(--text-secondary);}
+
+  /* BATTLE GRID */
+  .battle-grid{
+    display:grid; grid-template-columns:minmax(0,380px) 1fr;
+    gap:32px; margin:28px 0; align-items:start;
+  }
+  @media (max-width:900px){.battle-grid{grid-template-columns:1fr;}}
+
+  /* PHONE */
+  .phone-wrap{
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    position:sticky; top:20px;
+  }
+  .phone-label{
+    font-family:var(--font-mono); font-size:.75rem; color:var(--text-muted);
+    text-transform:uppercase; letter-spacing:.08em;
+  }
+  .phone{
+    width:300px; height:600px; background:#0a0d13;
+    border:8px solid #1e2330; border-radius:36px;
+    box-shadow:0 30px 80px rgba(0,0,0,.6), inset 0 0 0 1px #2c3346;
+    position:relative; overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .phone-notch{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:110px; height:22px; background:#0a0d13;
+    border-bottom-left-radius:14px; border-bottom-right-radius:14px; z-index:10;
+  }
+  .phone-status{
+    height:32px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 22px; font-family:var(--font-mono); font-size:.62rem; color:#a3abc4;
+  }
+  .phone-status .right{display:flex;gap:4px;align-items:center;}
+
+  /* SCREEN */
+  .screen{
+    flex:1; background:#f4f6fb; color:#1a1d26;
+    display:flex; flex-direction:column; overflow:hidden;
+    font-family:var(--font-sans);
+  }
+
+  /* AppBar */
+  .appbar{
+    height:56px; flex-shrink:0; background:#ffffff;
+    border-bottom:1px solid #e3e6ee;
+    display:flex; align-items:center; gap:12px; padding:0 16px;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  .appbar .back-icon{
+    font-size:1.3rem; color:#1a1d26;
+    display:flex; align-items:center;
+  }
+  .appbar .title{font-weight:600;font-size:1rem;color:#1a1d26;}
+
+  /* BODY */
+  .body-area{
+    flex:1; padding:20px 18px; overflow-y:auto;
+    display:flex; flex-direction:column;
+  }
+
+  /* PRODUCT CARD */
+  .product-card{
+    background:#ffffff;
+    border-radius:16px;
+    padding:18px;
+    box-shadow:0 4px 16px rgba(0,0,0,.06);
+    margin-bottom:16px;
+  }
+
+  /* TOP ROW — image on left, column on right (NEW: Column inside Row) */
+  .card-top{
+    display:flex; gap:14px; align-items:flex-start;
+    margin-bottom:16px;
+  }
+  .product-img{
+    width:90px; height:90px; border-radius:12px;
+    background:linear-gradient(135deg,#69f0ae,#4dd0e1);
+    display:flex; align-items:center; justify-content:center;
+    color:#0a0d13;
+    flex-shrink:0;
+  }
+  .product-img .ic-svg{width:2.6rem;height:2.6rem;stroke-width:1.6;}
+  .product-info{
+    flex:1;
+    display:flex; flex-direction:column;
+    text-align:left;
+  }
+  .product-name{
+    font-weight:700; font-size:1.05rem; color:#1a1d26;
+    margin-bottom:4px; line-height:1.25;
+  }
+  .product-cat{
+    font-size:.75rem; color:#68708a; margin-bottom:10px;
+    text-transform:uppercase; letter-spacing:.05em;
+  }
+  .product-rating{
+    display:flex; align-items:center; gap:5px;
+    background:#fff7e6; color:#b26a00;
+    padding:4px 10px; border-radius:20px;
+    font-size:.75rem; font-weight:700;
+    align-self:flex-start;
+  }
+  .product-rating .ic-svg{width:.85rem;height:.85rem;fill:currentColor;stroke:none;}
+
+  /* DESCRIPTION */
+  .product-desc{
+    font-size:.85rem; color:#4a5060; line-height:1.55;
+    margin-bottom:16px;
+    padding-top:14px; border-top:1px solid #eef0f5;
+  }
+
+  /* BOTTOM ROW — price + button */
+  .card-bottom{
+    display:flex; justify-content:space-between; align-items:center;
+    padding-top:14px; border-top:1px solid #eef0f5;
+    gap:12px;
+  }
+  .card-bottom .price-block{display:flex;flex-direction:column;gap:1px;}
+  .card-bottom .price-label{font-size:.65rem;color:#68708a;text-transform:uppercase;letter-spacing:.06em;}
+  .card-bottom .price-value{font-weight:700;font-size:1.3rem;color:#1a1d26;line-height:1;}
+  .card-bottom .buy-btn{
+    background:#69f0ae; color:#0a0d13; border:none; border-radius:10px;
+    padding:12px 20px; font-weight:700; font-size:.85rem;
+    display:flex; align-items:center; gap:8px;
+    box-shadow:0 4px 12px rgba(105,240,174,.35);
+    font-family:var(--font-sans);
+  }
+  .card-bottom .buy-btn .ic-svg{width:1rem;height:1rem;}
+
+  /* GUIDE PANEL */
+  .guide-panel{
+    background:var(--bg-panel-alt); border:1px solid var(--border);
+    border-radius:var(--radius-md); padding:26px 28px;
+  }
+  .guide-panel h3{margin-top:0;color:var(--accent-p2);font-size:1rem;}
+  .guide-panel h4{
+    font-family:var(--font-mono); font-size:.82rem; color:var(--accent-p5);
+    text-transform:uppercase; letter-spacing:.05em; margin:20px 0 10px;
+  }
+  .guide-panel h4:first-of-type{margin-top:8px;}
+
+  .widget-list{list-style:none; margin-left:0; margin-bottom:0;}
+  .widget-list li{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:11px 0; border-bottom:1px solid var(--border-soft);
+    font-size:.9rem;
+  }
+  .widget-list li:last-child{border-bottom:none;}
+  .widget-list .wc{
+    font-family:var(--font-mono); font-size:.78rem; font-weight:600;
+    padding:3px 10px; border-radius:5px; flex-shrink:0;
+    min-width:100px; text-align:center;
+  }
+  .wc.blue{background:rgba(84,197,248,.12);color:var(--accent-p1);border:1px solid rgba(84,197,248,.3);}
+  .wc.green{background:rgba(105,240,174,.12);color:var(--accent-p2);border:1px solid rgba(105,240,174,.3);}
+  .wc.purple{background:rgba(179,136,255,.12);color:var(--accent-p4);border:1px solid rgba(179,136,255,.3);}
+  .wc.amber{background:rgba(255,213,79,.12);color:var(--accent-p5);border:1px solid rgba(255,213,79,.3);}
+  .wc.teal{background:rgba(77,208,225,.12);color:var(--accent-p3);border:1px solid rgba(77,208,225,.3);}
+  .wc.pink{background:rgba(244,143,177,.12);color:var(--accent-p7);border:1px solid rgba(244,143,177,.3);}
+  .widget-list .desc{color:var(--text-secondary);font-size:.85rem;line-height:1.55;}
+  .widget-list .desc code{font-size:.8em;}
+
+  /* TREE */
+  .tree{
+    font-family:var(--font-mono); font-size:.76rem; line-height:1.9;
+    background:var(--bg-base-2); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:16px 18px;
+    color:var(--text-secondary); overflow-x:auto; margin-bottom:8px;
+  }
+  .tree .root{color:var(--accent-p2);font-weight:600;}
+  .tree .lvl1{color:var(--accent-p4);}
+  .tree .lvl2{color:var(--accent-p3);}
+  .tree .leaf{color:var(--accent-p5);}
+  .tree .comment{color:var(--text-muted);font-style:italic;}
+
+  /* CONCEPT BOX */
+  .concept-box{
+    background:rgba(105,240,174,.06);
+    border:1px solid rgba(105,240,174,.3);
+    border-left:3px solid var(--accent-p2);
+    border-radius:var(--radius-sm);
+    padding:16px 20px; margin:18px 0;
+  }
+  .concept-box h4{
+    font-family:var(--font-mono); font-size:.82rem;
+    color:var(--accent-p2); text-transform:uppercase;
+    letter-spacing:.05em; margin-bottom:10px;
+  }
+  .concept-box p{font-size:.88rem; margin-bottom:8px; color:var(--text-secondary);}
+  .concept-box p:last-child{margin-bottom:0;}
+  .concept-box code{color:var(--accent-dart);}
+
+  /* RULES */
+  .rule{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:12px 0; border-bottom:1px solid var(--border-soft); font-size:.88rem;
+  }
+  .rule:last-child{border-bottom:none;}
+  .rule .num{
+    font-family:var(--font-mono); font-weight:700; color:var(--accent-p2);
+    flex-shrink:0; width:22px;
+  }
+  .rule .txt{color:var(--text-secondary);}
+  .rule .txt strong{color:var(--text-primary);}
+
+  /* CTA */
+  .cta-row{
+    display:flex; justify-content:center; margin-top:28px;
+    padding-top:26px; border-top:1px solid var(--border-soft);
+  }
+  .btn{
+    font-family:var(--font-mono); font-size:.95rem; text-align:center;
+    padding:16px 34px; border-radius:var(--radius-sm); text-decoration:none;
+    border:1px solid transparent; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; gap:10px;
+    transition:all .15s; letter-spacing:.02em;
+  }
+  .btn-battle{
+    background:linear-gradient(135deg,#69f0ae,#4dd0e1);
+    color:#0a0d13; font-weight:700; border:none;
+    box-shadow:0 8px 24px rgba(105,240,174,.3);
+  }
+  .btn-battle:hover{filter:brightness(1.08); transform:translateY(-2px); box-shadow:0 12px 30px rgba(105,240,174,.4);}
+
+  /* HINT */
+  .hint-box{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-left:3px solid var(--accent-p5); border-radius:var(--radius-sm);
+    padding:16px 20px; margin:18px 0; font-size:.9rem; color:var(--text-secondary);
+  }
+  .hint-box strong{color:var(--accent-p5);}
+
+  /* LEGEND */
+  .legend{
+    display:flex; flex-wrap:wrap; gap:14px; margin-top:16px;
+    font-family:var(--font-mono); font-size:.72rem; color:var(--text-muted);
+  }
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- TOP NAV -->
+  <div class="top-nav">
+    <a href="battlelayout2.html" class="back-link">
+      <svg class="ic-svg" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to Battle Layout 2
+    </a>
+    <span class="level-tag">BATTLE LAYOUT · 3</span>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="terminal-window">
+      <div class="terminal-bar">
+        <div class="terminal-dots"><span></span><span></span><span></span></div>
+        <div class="terminal-tab active">battlelayout3/</div>
+        <div class="terminal-tab">main.dart</div>
+      </div>
+      <div class="terminal-body">
+        <p class="terminal-comment">// battle layout 3 — first time nesting a Column inside a Row</p>
+        <h1 class="hero-title">Battle Layout #3<span class="cursor">_</span></h1>
+        <p class="hero-sub">Battle Layout 2 taught you a Row with an icon and a text. This time you go one level deeper: inside a Row, one of the children is itself a <code>Column</code>. That's how a product card puts an image on the left and a stack of info on the right.</p>
+        <div class="terminal-line"><span class="prompt">$</span>flutter create battle_layout_03</div>
+        <p class="terminal-output">Project created ✓ — open main.dart and build the layout below</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- MISSION -->
+  <div class="panel">
+    <h2>Mission: Product Card</h2>
+    <p>Below is the target wireframe. It's a product card — an image on the left with a stacked column of info on the right, a short description, and a price bar with a Buy button at the bottom. Rebuild it in Flutter using only the widgets listed on the right.</p>
+
+    <div class="battle-grid">
+
+      <!-- LEFT: PHONE -->
+      <div class="phone-wrap">
+        <div class="phone-label">◉ Target wireframe</div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-status">
+            <span>9:41</span>
+            <span class="right">●●● ▂▄▆ ▮</span>
+          </div>
+          <div class="screen">
+
+            <!-- AppBar -->
+            <div class="appbar">
+              <span class="back-icon">
+                <svg class="ic-svg" viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+              </span>
+              <span class="title">Product</span>
+            </div>
+
+            <!-- Body -->
+            <div class="body-area">
+
+              <div class="product-card">
+
+                <!-- TOP ROW: image + (column of name/cat/rating) -->
+                <div class="card-top">
+
+                  <!-- Image on the left -->
+                  <div class="product-img">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7L12 12l8.7-5"/><path d="M12 22V12"/></svg>
+                  </div>
+
+                  <!-- Column of info on the right -->
+                  <div class="product-info">
+                    <div class="product-name">Wireless Headphones</div>
+                    <div class="product-cat">Audio · Over-ear</div>
+                    <div class="product-rating">
+                      <svg class="ic-svg" viewBox="0 0 24 24"><polygon points="12 2 15.1 8.6 22 9.3 17 14.1 18.2 21 12 17.6 5.8 21 7 14.1 2 9.3 8.9 8.6 12 2"/></svg>
+                      4.7
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Description -->
+                <div class="product-desc">Premium sound, 30-hour battery life, active noise cancellation. Comfortable over-ear design for all-day listening.</div>
+
+                <!-- BOTTOM: price + button -->
+                <div class="card-bottom">
+                  <div class="price-block">
+                    <span class="price-label">Price</span>
+                    <span class="price-value">$89.00</span>
+                  </div>
+                  <div class="buy-btn">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+                    Buy Now
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="legend">
+          <span><span class="sw" style="background:#69f0ae;"></span>Image</span>
+          <span><span class="sw" style="background:#4dd0e1;"></span>Info column (NEW)</span>
+          <span><span class="sw" style="background:#b388ff;"></span>Description</span>
+          <span><span class="sw" style="background:#ffd54f;"></span>Price bar</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: GUIDE -->
+      <div class="guide-panel">
+        <h3>🛠 Your widget toolbox</h3>
+        <p style="font-size:.9rem;margin-bottom:8px;">You may only use these widgets. No others. Everything you need is here.</p>
+
+        <ul class="widget-list">
+          <li>
+            <span class="wc blue">Scaffold</span>
+            <span class="desc">Root screen container — provides the light background.</span>
+          </li>
+          <li>
+            <span class="wc blue">AppBar</span>
+            <span class="desc">Top bar. Put a <code>Row</code> inside its <code>title</code> for the back icon + "Product".</span>
+          </li>
+          <li>
+            <span class="wc purple">Column</span>
+            <span class="desc">Vertical stack — the card body, and the info block on the right of the top row.</span>
+          </li>
+          <li>
+            <span class="wc green">Row</span>
+            <span class="desc"><strong>The new idea.</strong> Top row: image + info column. Bottom row: price + button.</span>
+          </li>
+          <li>
+            <span class="wc pink">Container</span>
+            <span class="desc">The white card, the rounded image box, the rating pill.</span>
+          </li>
+          <li>
+            <span class="wc amber">Text</span>
+            <span class="desc">Name, category, rating number, description, price.</span>
+          </li>
+          <li>
+            <span class="wc purple">SizedBox</span>
+            <span class="desc">Spacing between widgets and between children in a Row or Column.</span>
+          </li>
+          <li>
+            <span class="wc amber">Padding</span>
+            <span class="desc">Inner spacing inside the card and around the body.</span>
+          </li>
+          <li>
+            <span class="wc teal">Icon</span>
+            <span class="desc">Back arrow, product icon, star icon, cart icon. Use <code>Icon(Icons.xxx)</code>.</span>
+          </li>
+        </ul>
+
+        <div class="concept-box">
+          <h4>⚡ The one new idea in this battle</h4>
+          <p><strong>A Column nested inside a Row.</strong> In Battle Layout 2 you had a Row whose children were an icon and a text. Now the Row's second child is a <em>Column</em> — three stacked texts (name, category, rating). This is how almost every real product card in the world is built.</p>
+          <p>On paper it looks like: <code>Row( children: [ image, Column( children: [name, cat, rating] ) ] )</code>. That's the whole new idea.</p>
+          <p>Also new: the <code>Container</code> for the image needs a fixed <code>width</code> and <code>height</code> so the Row knows how much room to leave for the Column next to it.</p>
+        </div>
+
+        <!-- ICON MAPPING -->
+        <h4>🎯 Icon mapping (wireframe → Flutter)</h4>
+        <div class="tree" style="line-height:2;">
+          <div><span class="comment">// back arrow</span></div>
+          <div>wireframe <span class="leaf">←</span> &nbsp;→&nbsp; <span class="root">Icon(Icons.arrow_back)</span></div>
+          <div>&nbsp;</div>
+          <div><span class="comment">// product image placeholder</span></div>
+          <div>wireframe <span class="leaf">📦</span> &nbsp;→&nbsp; <span class="root">Icon(Icons.headphones, size: 42)</span></div>
+          <div>&nbsp;</div>
+          <div><span class="comment">// star in the rating pill</span></div>
+          <div>wireframe <span class="leaf">★</span> &nbsp;→&nbsp; <span class="root">Icon(Icons.star, size: 14)</span></div>
+          <div>&nbsp;</div>
+          <div><span class="comment">// cart in the Buy button</span></div>
+          <div>wireframe <span class="leaf">🛒</span> &nbsp;→&nbsp; <span class="root">Icon(Icons.shopping_cart, size: 18)</span></div>
+        </div>
+
+        <h4>📐 Suggested nesting</h4>
+        <p style="font-size:.85rem;margin-bottom:10px;">This is a <em>hint</em> — not the answer. You still have to write every widget yourself.</p>
+        <div class="tree">
+          <div><span class="root">Scaffold</span></div>
+          <div>├─ <span class="lvl1">AppBar</span> <span class="comment">// Row: Icon(arrow_back) + "Product"</span></div>
+          <div>└─ <span class="lvl1">Padding</span></div>
+          <div>&nbsp;&nbsp;&nbsp;└─ <span class="lvl1">Column</span> <span class="comment">// the card</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="lvl2">Row</span> <span class="comment">// ← NEW: image + info</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;├─ <span class="leaf">Container</span> <span class="comment">// image (width 90, height 90)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;│&nbsp;&nbsp;└─ <span class="leaf">Icon(headphones)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;├─ <span class="leaf">SizedBox(width:14)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;└─ <span class="lvl2">Column</span> <span class="comment">// ← NEW: nested inside Row</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">Text</span> <span class="comment">// name</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">Text</span> <span class="comment">// category</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="leaf">Container</span> <span class="comment">// rating pill</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(height:16)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">Text</span> <span class="comment">// description</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(height:16)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="lvl2">Row</span> <span class="comment">// price + button</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">Column</span> <span class="comment">// label + value</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="leaf">Container</span> <span class="comment">// Buy button</span></div>
+        </div>
+        <p style="font-size:.8rem;color:var(--text-muted);">You don't have to match this tree exactly — any tree that produces the same visual result is correct.</p>
+
+        <h4>📋 Rules of the battle</h4>
+        <div class="rule">
+          <span class="num">1</span>
+          <span class="txt">Every widget you use must come from the toolbox above.</span>
+        </div>
+        <div class="rule">
+          <span class="num">2</span>
+          <span class="txt">Match the wireframe <strong>visually</strong> — same layout, same spacing, same cool colors.</span>
+        </div>
+        <div class="rule">
+          <span class="num">3</span>
+          <span class="txt">Use real Flutter icons — <code>Icon(Icons.xxx)</code>. Never emoji characters.</span>
+        </div>
+        <div class="rule">
+          <span class="num">4</span>
+          <span class="txt">No <code>onPressed</code> needed — this is a static layout battle.</span>
+        </div>
+        <div class="rule">
+          <span class="num">5</span>
+          <span class="txt">When it matches, take a screenshot and submit. Battle Layout 4 unlocks.</span>
+        </div>
+
+        <!-- SINGLE BATTLE BUTTON -->
+        <div class="cta-row">
+          <a href="battlelayout4.html" class="btn btn-battle">
+            <svg class="ic-svg" viewBox="0 0 24 24" style="width:16px;height:16px;"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            Battle Layout 4
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- HINT -->
+    <div class="hint-box">
+      <strong>💡 Battle tip:</strong> Don't try to build the whole card at once. First build the top row: a <code>Container</code> (image) on the left, a <code>SizedBox(width: 14)</code>, and then a <code>Column</code> with three texts on the right. Get that looking right, then move on to the description and the price bar. The whole battle is really just "Row → Column inside it → Row again."
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  (function typeTitle(){
+    const el = document.getElementById('typedTitle');
+    if(!el) return;
+  })();
+</script>
+</body>
+</html>

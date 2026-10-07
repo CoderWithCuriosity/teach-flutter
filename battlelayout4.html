@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battle Layout 4 — Flutter Mastery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-base:#0d1016; --bg-base-2:#12151d; --bg-panel:#161a24;
+    --bg-panel-alt:#1c2130; --bg-elevated:#232838;
+    --border:#2c3346; --border-soft:#232938;
+    --text-primary:#e9ecf5; --text-secondary:#a3abc4; --text-muted:#68708a;
+    --accent-flutter:#54c5f8; --accent-dart:#40c4ff;
+    --accent-p1:#54c5f8; --accent-p2:#69f0ae; --accent-p3:#4dd0e1;
+    --accent-p4:#b388ff; --accent-p5:#ffd54f; --accent-p6:#ffab40; --accent-p7:#f48fb1;
+    --radius-sm:6px; --radius-md:10px; --radius-lg:16px;
+    --font-mono:'JetBrains Mono','Courier New',monospace;
+    --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:var(--font-sans); line-height:1.65; color:var(--text-primary);
+    background:
+      radial-gradient(circle at 10% 4%, rgba(244,143,177,.09), transparent 42%),
+      radial-gradient(circle at 90% 12%, rgba(255,213,79,.07), transparent 42%),
+      radial-gradient(circle at 50% 97%, rgba(179,136,255,.06), transparent 45%),
+      var(--bg-base);
+    min-height:100vh;
+  }
+  .page{max-width:1280px;margin:0 auto;padding:32px 20px 64px;}
+  a{color:inherit;}
+  code{
+    font-family:var(--font-mono); background:rgba(255,255,255,.06);
+    padding:2px 7px; border-radius:4px; font-size:.88em; color:var(--accent-dart);
+  }
+  :focus-visible{outline:2px solid var(--accent-flutter);outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+
+  .ic-svg{width:1em;height:1em;display:inline-block;vertical-align:-0.125em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+  /* TOP NAV */
+  .top-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+  .back-link{
+    font-family:var(--font-mono); font-size:.85rem; color:var(--text-muted);
+    text-decoration:none; display:inline-flex; align-items:center; gap:6px; transition:color .15s;
+  }
+  .back-link:hover{color:var(--text-primary);}
+  .level-tag{
+    font-family:var(--font-mono); font-size:.78rem; color:var(--accent-p7);
+    background:rgba(244,143,177,.1); padding:4px 14px; border-radius:20px;
+    border:1px solid rgba(244,143,177,.3);
+  }
+
+  /* HERO */
+  .hero{margin-bottom:26px;}
+  .terminal-window{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:var(--radius-lg); overflow:hidden;
+    box-shadow:0 24px 70px rgba(0,0,0,.5);
+  }
+  .terminal-bar{
+    display:flex; align-items:center; gap:14px; padding:13px 18px;
+    background:var(--bg-base-2); border-bottom:1px solid var(--border-soft);
+  }
+  .terminal-dots{display:flex;gap:7px;}
+  .terminal-dots span{width:11px;height:11px;border-radius:50%;display:block;}
+  .terminal-dots span:nth-child(1){background:#ec6a5e;}
+  .terminal-dots span:nth-child(2){background:#f4bf4f;}
+  .terminal-dots span:nth-child(3){background:#61c454;}
+  .terminal-tab{
+    font-family:var(--font-mono); font-size:.78rem; color:var(--text-muted);
+    padding:4px 12px; background:var(--bg-panel-alt); border-radius:5px;
+  }
+  .terminal-tab.active{color:var(--accent-dart);border:1px solid var(--border);}
+  .terminal-body{padding:42px 46px 38px;}
+  .terminal-comment{font-family:var(--font-mono);font-size:.85rem;color:var(--text-muted);margin-bottom:14px;}
+  .hero-title{
+    font-family:var(--font-mono); font-weight:700;
+    font-size:clamp(1.7rem,4vw,2.7rem); letter-spacing:-.02em; margin-bottom:18px;
+  }
+  .cursor{display:inline-block;color:var(--accent-p7);animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .hero-sub{font-size:1.05rem;color:var(--text-secondary);max-width:720px;margin-bottom:26px;}
+  .terminal-line{font-family:var(--font-mono);font-size:.92rem;color:var(--text-secondary);margin-bottom:6px;}
+  .terminal-line .prompt{color:var(--accent-p2);margin-right:8px;}
+  .terminal-output{
+    font-family:var(--font-mono); font-size:.86rem; color:var(--text-muted);
+    margin-bottom:26px; padding-left:20px;
+  }
+
+  /* PANEL */
+  .panel{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:var(--radius-lg); padding:34px; margin-bottom:24px;
+  }
+  h2{
+    font-family:var(--font-mono); font-size:1.32rem; color:var(--text-primary);
+    margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid var(--border-soft);
+  }
+  h3{
+    font-family:var(--font-mono); font-size:1.05rem; color:var(--text-primary);
+    margin:28px 0 12px;
+  }
+  p{margin-bottom:14px;color:var(--text-secondary);}
+
+  /* BATTLE GRID */
+  .battle-grid{
+    display:grid; grid-template-columns:minmax(0,380px) 1fr;
+    gap:32px; margin:28px 0; align-items:start;
+  }
+  @media (max-width:900px){.battle-grid{grid-template-columns:1fr;}}
+
+  /* PHONE */
+  .phone-wrap{
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    position:sticky; top:20px;
+  }
+  .phone-label{
+    font-family:var(--font-mono); font-size:.75rem; color:var(--text-muted);
+    text-transform:uppercase; letter-spacing:.08em;
+  }
+  .phone{
+    width:300px; height:600px; background:#0a0d13;
+    border:8px solid #1e2330; border-radius:36px;
+    box-shadow:0 30px 80px rgba(0,0,0,.6), inset 0 0 0 1px #2c3346;
+    position:relative; overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .phone-notch{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:110px; height:22px; background:#0a0d13;
+    border-bottom-left-radius:14px; border-bottom-right-radius:14px; z-index:10;
+  }
+  .phone-status{
+    height:32px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 22px; font-family:var(--font-mono); font-size:.62rem; color:#a3abc4;
+  }
+  .phone-status .right{display:flex;gap:4px;align-items:center;}
+
+  /* SCREEN */
+  .screen{
+    flex:1; background:#f4f6fb; color:#1a1d26;
+    display:flex; flex-direction:column; overflow:hidden;
+    font-family:var(--font-sans);
+  }
+
+  /* BODY — no AppBar now, just the content */
+  .body-area{
+    flex:1; padding:22px 18px; overflow-y:auto;
+    display:flex; flex-direction:column;
+  }
+
+  /* SECTION HEADER */
+  .section-head{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:14px;
+  }
+  .section-head .h-title{
+    font-weight:700; font-size:1.1rem; color:#1a1d26;
+  }
+  .section-head .h-action{
+    font-size:.78rem; color:#0288d1; font-weight:600;
+    display:flex; align-items:center; gap:4px;
+  }
+  .section-head .h-action .ic-svg{width:.85rem;height:.85rem;}
+
+  /* LIST OF ROWS — this is the new concept */
+  .list{
+    display:flex; flex-direction:column; gap:10px;
+  }
+
+  .list-row{
+    background:#ffffff;
+    border-radius:14px;
+    padding:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+    display:flex; align-items:center; gap:12px;
+  }
+
+  .row-icon{
+    width:44px; height:44px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .row-icon .ic-svg{width:1.3rem;height:1.3rem;}
+
+  .row-icon.c1{background:#e6f4fe; color:#0288d1;}
+  .row-icon.c2{background:#fce4ec; color:#c2185b;}
+  .row-icon.c3{background:#e8f5e9; color:#2e7d32;}
+  .row-icon.c4{background:#fff3e0; color:#e65100;}
+
+  .row-info{
+    flex:1;
+    display:flex; flex-direction:column;
+    text-align:left;
+  }
+  .row-title{
+    font-weight:600; font-size:.95rem; color:#1a1d26;
+    line-height:1.3;
+  }
+  .row-sub{
+    font-size:.78rem; color:#68708a;
+  }
+
+  .row-amount{
+    font-family:var(--font-mono);
+    font-weight:700; font-size:.92rem; color:#1a1d26;
+    flex-shrink:0;
+  }
+  .row-amount.plus{color:#2e7d32;}
+
+  /* GUIDE PANEL */
+  .guide-panel{
+    background:var(--bg-panel-alt); border:1px solid var(--border);
+    border-radius:var(--radius-md); padding:26px 28px;
+  }
+  .guide-panel h3{margin-top:0;color:var(--accent-p7);font-size:1rem;}
+  .guide-panel h4{
+    font-family:var(--font-mono); font-size:.82rem; color:var(--accent-p5);
+    text-transform:uppercase; letter-spacing:.05em; margin:20px 0 10px;
+  }
+  .guide-panel h4:first-of-type{margin-top:8px;}
+
+  .widget-list{list-style:none; margin-left:0; margin-bottom:0;}
+  .widget-list li{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:11px 0; border-bottom:1px solid var(--border-soft);
+    font-size:.9rem;
+  }
+  .widget-list li:last-child{border-bottom:none;}
+  .widget-list .wc{
+    font-family:var(--font-mono); font-size:.78rem; font-weight:600;
+    padding:3px 10px; border-radius:5px; flex-shrink:0;
+    min-width:100px; text-align:center;
+  }
+  .wc.blue{background:rgba(84,197,248,.12);color:var(--accent-p1);border:1px solid rgba(84,197,248,.3);}
+  .wc.green{background:rgba(105,240,174,.12);color:var(--accent-p2);border:1px solid rgba(105,240,174,.3);}
+  .wc.purple{background:rgba(179,136,255,.12);color:var(--accent-p4);border:1px solid rgba(179,136,255,.3);}
+  .wc.amber{background:rgba(255,213,79,.12);color:var(--accent-p5);border:1px solid rgba(255,213,79,.3);}
+  .wc.teal{background:rgba(77,208,225,.12);color:var(--accent-p3);border:1px solid rgba(77,208,225,.3);}
+  .wc.pink{background:rgba(244,143,177,.12);color:var(--accent-p7);border:1px solid rgba(244,143,177,.3);}
+  .widget-list .desc{color:var(--text-secondary);font-size:.85rem;line-height:1.55;}
+  .widget-list .desc code{font-size:.8em;}
+
+  /* TREE */
+  .tree{
+    font-family:var(--font-mono); font-size:.76rem; line-height:1.9;
+    background:var(--bg-base-2); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:16px 18px;
+    color:var(--text-secondary); overflow-x:auto; margin-bottom:8px;
+  }
+  .tree .root{color:var(--accent-p7);font-weight:600;}
+  .tree .lvl1{color:var(--accent-p4);}
+  .tree .lvl2{color:var(--accent-p3);}
+  .tree .leaf{color:var(--accent-p5);}
+  .tree .comment{color:var(--text-muted);font-style:italic;}
+
+  /* CONCEPT BOX */
+  .concept-box{
+    background:rgba(244,143,177,.06);
+    border:1px solid rgba(244,143,177,.3);
+    border-left:3px solid var(--accent-p7);
+    border-radius:var(--radius-sm);
+    padding:16px 20px; margin:18px 0;
+  }
+  .concept-box h4{
+    font-family:var(--font-mono); font-size:.82rem;
+    color:var(--accent-p7); text-transform:uppercase;
+    letter-spacing:.05em; margin-bottom:10px;
+  }
+  .concept-box p{font-size:.88rem; margin-bottom:8px; color:var(--text-secondary);}
+  .concept-box p:last-child{margin-bottom:0;}
+  .concept-box code{color:var(--accent-dart);}
+
+  /* RULES */
+  .rule{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:12px 0; border-bottom:1px solid var(--border-soft); font-size:.88rem;
+  }
+  .rule:last-child{border-bottom:none;}
+  .rule .num{
+    font-family:var(--font-mono); font-weight:700; color:var(--accent-p7);
+    flex-shrink:0; width:22px;
+  }
+  .rule .txt{color:var(--text-secondary);}
+  .rule .txt strong{color:var(--text-primary);}
+
+  /* CTA */
+  .cta-row{
+    display:flex; justify-content:center; margin-top:28px;
+    padding-top:26px; border-top:1px solid var(--border-soft);
+  }
+  .btn{
+    font-family:var(--font-mono); font-size:.95rem; text-align:center;
+    padding:16px 34px; border-radius:var(--radius-sm); text-decoration:none;
+    border:1px solid transparent; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; gap:10px;
+    transition:all .15s; letter-spacing:.02em;
+  }
+  .btn-battle{
+    background:linear-gradient(135deg,#f48fb1,#b388ff);
+    color:#1a0e18; font-weight:700; border:none;
+    box-shadow:0 8px 24px rgba(244,143,177,.3);
+  }
+  .btn-battle:hover{filter:brightness(1.08); transform:translateY(-2px); box-shadow:0 12px 30px rgba(244,143,177,.4);}
+
+  /* HINT */
+  .hint-box{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-left:3px solid var(--accent-p5); border-radius:var(--radius-sm);
+    padding:16px 20px; margin:18px 0; font-size:.9rem; color:var(--text-secondary);
+  }
+  .hint-box strong{color:var(--accent-p5);}
+
+  /* LEGEND */
+  .legend{
+    display:flex; flex-wrap:wrap; gap:14px; margin-top:16px;
+    font-family:var(--font-mono); font-size:.72rem; color:var(--text-muted);
+  }
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- TOP NAV -->
+  <div class="top-nav">
+    <a href="battlelayout3.html" class="back-link">
+      <svg class="ic-svg" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to Battle Layout 3
+    </a>
+    <span class="level-tag">BATTLE LAYOUT · 4</span>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="terminal-window">
+      <div class="terminal-bar">
+        <div class="terminal-dots"><span></span><span></span><span></span></div>
+        <div class="terminal-tab active">battlelayout4/</div>
+        <div class="terminal-tab">main.dart</div>
+      </div>
+      <div class="terminal-body">
+        <p class="terminal-comment">// battle layout 4 — a list of rows, no AppBar, no chrome</p>
+        <h1 class="hero-title">Battle Layout #4<span class="cursor">_</span></h1>
+        <p class="hero-sub">No AppBar this time. Just the body. You build a transaction list — a header line, then four rows stacked vertically, each row an icon + a column of text + an amount. This is the first battle where you repeat the same Row pattern four times.</p>
+        <div class="terminal-line"><span class="prompt">$</span>flutter create battle_layout_04</div>
+        <p class="terminal-output">Project created ✓ — open main.dart and build the layout below</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- MISSION -->
+  <div class="panel">
+    <h2>Mission: Transaction List</h2>
+    <p>Below is the target wireframe. It's a simple transactions screen — no AppBar, just a small section header at the top and four identical rows below it. Each row has an icon on the left, a column of two texts in the middle, and an amount on the right. Rebuild it in Flutter using only the widgets listed on the right.</p>
+
+    <div class="battle-grid">
+
+      <!-- LEFT: PHONE -->
+      <div class="phone-wrap">
+        <div class="phone-label">◉ Target wireframe</div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-status">
+            <span>9:41</span>
+            <span class="right">●●● ▂▄▆ ▮</span>
+          </div>
+          <div class="screen">
+
+            <!-- Body only — no AppBar -->
+            <div class="body-area">
+
+              <!-- Section header -->
+              <div class="section-head">
+                <span class="h-title">Recent</span>
+                <span class="h-action">
+                  See all
+                  <svg class="ic-svg" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+              </div>
+
+              <!-- List of rows -->
+              <div class="list">
+
+                <!-- Row 1 -->
+                <div class="list-row">
+                  <div class="row-icon c1">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  </div>
+                  <div class="row-info">
+                    <span class="row-title">Salary</span>
+                    <span class="row-sub">Feb 1 · Direct deposit</span>
+                  </div>
+                  <span class="row-amount plus">+$3,200</span>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="list-row">
+                  <div class="row-icon c2">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+                  </div>
+                  <div class="row-info">
+                    <span class="row-title">Groceries</span>
+                    <span class="row-sub">Jan 31 · Supermarket</span>
+                  </div>
+                  <span class="row-amount">−$84.20</span>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="list-row">
+                  <div class="row-icon c3">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 3v6h6"/></svg>
+                  </div>
+                  <div class="row-info">
+                    <span class="row-title">Refund</span>
+                    <span class="row-sub">Jan 28 · Online store</span>
+                  </div>
+                  <span class="row-amount plus">+$22.00</span>
+                </div>
+
+                <!-- Row 4 -->
+                <div class="list-row">
+                  <div class="row-icon c4">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+                  </div>
+                  <div class="row-info">
+                    <span class="row-title">Subscription</span>
+                    <span class="row-sub">Jan 25 · Streaming</span>
+                  </div>
+                  <span class="row-amount">−$9.99</span>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="legend">
+          <span><span class="sw" style="background:#f48fb1;"></span>Section header</span>
+          <span><span class="sw" style="background:#54c5f8;"></span>Icon</span>
+          <span><span class="sw" style="background:#69f0ae;"></span>Info column</span>
+          <span><span class="sw" style="background:#ffd54f;"></span>Amount</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: GUIDE -->
+      <div class="guide-panel">
+        <h3>🛠 Your widget toolbox</h3>
+        <p style="font-size:.9rem;margin-bottom:8px;">You may only use these widgets. No others. Everything you need is here.</p>
+
+        <ul class="widget-list">
+          <li>
+            <span class="wc blue">Scaffold</span>
+            <span class="desc">Root screen container. <strong>No AppBar this time</strong> — leave that argument out entirely.</span>
+          </li>
+          <li>
+            <span class="wc purple">Column</span>
+            <span class="desc">The main vertical stack: header on top, list of rows below it.</span>
+          </li>
+          <li>
+            <span class="wc green">Row</span>
+            <span class="desc"><strong>The repeating idea.</strong> Each transaction row is a Row with three children: icon, info column, amount.</span>
+          </li>
+          <li>
+            <span class="wc pink">Container</span>
+            <span class="desc">The white card behind each row, and the little colored icon square on the left.</span>
+          </li>
+          <li>
+            <span class="wc amber">Text</span>
+            <span class="desc">Section title, "See all", row titles, row subtitles, amounts.</span>
+          </li>
+          <li>
+            <span class="wc purple">SizedBox</span>
+            <span class="desc">Spacing between widgets and between children in a Row.</span>
+          </li>
+          <li>
+            <span class="wc amber">Padding</span>
+            <span class="desc">Inner spacing inside each row card and around the body.</span>
+          </li>
+          <li>
+            <span class="wc teal">Icon</span>
+            <span class="desc">The chevron in "See all", and the four icons in the rows (payments, cart, refresh, card).</span>
+          </li>
+        </ul>
+
+        <div class="concept-box">
+          <h4>⚡ The one new idea in this battle</h4>
+          <p><strong>A list built from a Column of Rows.</strong> There's no <code>ListView</code> yet — that comes later. For now, you just stack four <code>Row</code>s inside one <code>Column</code>, separated by <code>SizedBox(height: 10)</code>. Same row structure, repeated four times.</p>
+          <p>Each row is itself a nested structure: <code>Row( children: [ iconContainer, SizedBox, Column(title, subtitle), amountText ] )</code>. That's the whole pattern. Four copies of the same pattern.</p>
+          <p><strong>Also different:</strong> no AppBar. The <code>Scaffold</code> only has a <code>body</code>. That's fine — that's the whole point of this battle. You're learning to build a screen without the top bar.</p>
+        </div>
+
+        <!-- ICON MAPPING -->
+        <h4>🎯 Icon mapping (wireframe → Flutter)</h4>
+        <div class="tree" style="line-height:2;">
+          <div><span class="comment">// chevron in the "See all" action</span></div>
+          <div>wireframe <span class="leaf">›</span> &nbsp;→&nbsp; <span class="root">Icon(Icons.chevron_right, size: 14)</span></div>
+          <div>&nbsp;</div>
+          <div><span class="comment">// salary row icon</span></div>
+          <div>wireframe <span class="leaf">$</span> &nbsp;→&nbsp; <span class="root">Icon(Icons.payments)</span></div>
+          <div>&nbsp;</div>
+          <div><span class="comment">// groceries row icon</span></div>
+          <div>wireframe <span class="leaf">🛒</span> &nbsp;→&nbsp; <span class="root">Icon(Icons.shopping_cart)</span></div>
+          <div>&nbsp;</div>
+          <div><span class="comment">// refund row icon</span></div>
+          <div>wireframe <span class="leaf">↺</span> &nbsp;→&nbsp; <span class="root">Icon(Icons.refresh)</span></div>
+          <div>&nbsp;</div>
+          <div><span class="comment">// subscription row icon</span></div>
+          <div>wireframe <span class="leaf">▭</span> &nbsp;→&nbsp; <span class="root">Icon(Icons.credit_card)</span></div>
+        </div>
+
+        <h4>📐 Suggested nesting</h4>
+        <p style="font-size:.85rem;margin-bottom:10px;">This is a <em>hint</em> — not the answer. You still have to write every widget yourself.</p>
+        <div class="tree">
+          <div><span class="root">Scaffold</span> <span class="comment">// no AppBar</span></div>
+          <div>└─ <span class="lvl1">Padding</span></div>
+          <div>&nbsp;&nbsp;&nbsp;└─ <span class="lvl1">Column</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="lvl2">Row</span> <span class="comment">// section header</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;├─ <span class="leaf">Text</span> <span class="comment">// "Recent"</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;└─ <span class="leaf">Row</span> <span class="comment">// "See all" + Icon(chevron_right)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(height:14)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="lvl2">Row</span> <span class="comment">// ← row 1</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;├─ <span class="leaf">Container</span> <span class="comment">// icon square</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;├─ <span class="leaf">SizedBox(width:12)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;├─ <span class="leaf">Column</span> <span class="comment">// title + subtitle</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;└─ <span class="leaf">Text</span> <span class="comment">// amount</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(height:10)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="lvl2">Row</span> <span class="comment">// ← row 2 (same shape)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(height:10)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="lvl2">Row</span> <span class="comment">// ← row 3</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(height:10)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="lvl2">Row</span> <span class="comment">// ← row 4</span></div>
+        </div>
+        <p style="font-size:.8rem;color:var(--text-muted);">You don't have to match this tree exactly — any tree that produces the same visual result is correct.</p>
+
+        <h4>📋 Rules of the battle</h4>
+        <div class="rule">
+          <span class="num">1</span>
+          <span class="txt">Every widget you use must come from the toolbox above.</span>
+        </div>
+        <div class="rule">
+          <span class="num">2</span>
+          <span class="txt"><strong>No AppBar.</strong> The <code>Scaffold</code> only has a <code>body:</code>. That's the whole point of this level.</span>
+        </div>
+        <div class="rule">
+          <span class="num">3</span>
+          <span class="txt">Match the wireframe <strong>visually</strong> — same spacing, same card shape, same colors.</span>
+        </div>
+        <div class="rule">
+          <span class="num">4</span>
+          <span class="txt">Use real Flutter icons — <code>Icon(Icons.xxx)</code>. Never emoji characters.</span>
+        </div>
+        <div class="rule">
+          <span class="num">5</span>
+          <span class="txt">No <code>onPressed</code>, no <code>ListView</code>, no scrolling widget. Just a Column of four Rows.</span>
+        </div>
+        <div class="rule">
+          <span class="num">6</span>
+          <span class="txt">When it matches, take a screenshot and submit. Battle Layout 5 unlocks.</span>
+        </div>
+
+        <!-- SINGLE BATTLE BUTTON -->
+        <div class="cta-row">
+          <a href="battlelayout5.html" class="btn btn-battle">
+            <svg class="ic-svg" viewBox="0 0 24 24" style="width:16px;height:16px;"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            Battle Layout 5
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- HINT -->
+    <div class="hint-box">
+      <strong>💡 Battle tip:</strong> Build the very first row perfectly — icon square, gap, column of two texts, amount on the right. Once row 1 looks right, copy-paste that row three times and just change the texts and the icon name. Don't rebuild from scratch each time. That's exactly how real Flutter code works: you write the pattern once, then reuse it.
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  (function typeTitle(){
+    const el = document.getElementById('typedTitle');
+    if(!el) return;
+  })();
+</script>
+</body>
+</html>

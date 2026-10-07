@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battle Layout 2 — Flutter Mastery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-base:#0d1016; --bg-base-2:#12151d; --bg-panel:#161a24;
+    --bg-panel-alt:#1c2130; --bg-elevated:#232838;
+    --border:#2c3346; --border-soft:#232938;
+    --text-primary:#e9ecf5; --text-secondary:#a3abc4; --text-muted:#68708a;
+    --accent-flutter:#54c5f8; --accent-dart:#40c4ff;
+    --accent-p1:#54c5f8; --accent-p2:#69f0ae; --accent-p3:#4dd0e1;
+    --accent-p4:#b388ff; --accent-p5:#ffd54f; --accent-p6:#ffab40; --accent-p7:#f48fb1;
+    --radius-sm:6px; --radius-md:10px; --radius-lg:16px;
+    --font-mono:'JetBrains Mono','Courier New',monospace;
+    --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:var(--font-sans); line-height:1.65; color:var(--text-primary);
+    background:
+      radial-gradient(circle at 10% 4%, rgba(84,197,248,.09), transparent 42%),
+      radial-gradient(circle at 90% 12%, rgba(179,136,255,.07), transparent 42%),
+      radial-gradient(circle at 50% 97%, rgba(105,240,174,.06), transparent 45%),
+      var(--bg-base);
+    min-height:100vh;
+  }
+  .page{max-width:1280px;margin:0 auto;padding:32px 20px 64px;}
+  a{color:inherit;}
+  code{
+    font-family:var(--font-mono); background:rgba(255,255,255,.06);
+    padding:2px 7px; border-radius:4px; font-size:.88em; color:var(--accent-dart);
+  }
+  :focus-visible{outline:2px solid var(--accent-flutter);outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+
+  /* Inline SVG icon helper */
+  .ic-svg{width:1em;height:1em;display:inline-block;vertical-align:-0.125em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+  /* TOP NAV */
+  .top-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+  .back-link{
+    font-family:var(--font-mono); font-size:.85rem; color:var(--text-muted);
+    text-decoration:none; display:inline-flex; align-items:center; gap:6px; transition:color .15s;
+  }
+  .back-link:hover{color:var(--text-primary);}
+  .level-tag{
+    font-family:var(--font-mono); font-size:.78rem; color:var(--accent-p3);
+    background:rgba(77,208,225,.1); padding:4px 14px; border-radius:20px;
+    border:1px solid rgba(77,208,225,.3);
+  }
+
+  /* HERO */
+  .hero{margin-bottom:26px;}
+  .terminal-window{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:var(--radius-lg); overflow:hidden;
+    box-shadow:0 24px 70px rgba(0,0,0,.5);
+  }
+  .terminal-bar{
+    display:flex; align-items:center; gap:14px; padding:13px 18px;
+    background:var(--bg-base-2); border-bottom:1px solid var(--border-soft);
+  }
+  .terminal-dots{display:flex;gap:7px;}
+  .terminal-dots span{width:11px;height:11px;border-radius:50%;display:block;}
+  .terminal-dots span:nth-child(1){background:#ec6a5e;}
+  .terminal-dots span:nth-child(2){background:#f4bf4f;}
+  .terminal-dots span:nth-child(3){background:#61c454;}
+  .terminal-tab{
+    font-family:var(--font-mono); font-size:.78rem; color:var(--text-muted);
+    padding:4px 12px; background:var(--bg-panel-alt); border-radius:5px;
+  }
+  .terminal-tab.active{color:var(--accent-dart);border:1px solid var(--border);}
+  .terminal-body{padding:42px 46px 38px;}
+  .terminal-comment{font-family:var(--font-mono);font-size:.85rem;color:var(--text-muted);margin-bottom:14px;}
+  .hero-title{
+    font-family:var(--font-mono); font-weight:700;
+    font-size:clamp(1.7rem,4vw,2.7rem); letter-spacing:-.02em; margin-bottom:18px;
+  }
+  .cursor{display:inline-block;color:var(--accent-p3);animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .hero-sub{font-size:1.05rem;color:var(--text-secondary);max-width:720px;margin-bottom:26px;}
+  .terminal-line{font-family:var(--font-mono);font-size:.92rem;color:var(--text-secondary);margin-bottom:6px;}
+  .terminal-line .prompt{color:var(--accent-p2);margin-right:8px;}
+  .terminal-output{
+    font-family:var(--font-mono); font-size:.86rem; color:var(--text-muted);
+    margin-bottom:26px; padding-left:20px;
+  }
+
+  /* PANEL */
+  .panel{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:var(--radius-lg); padding:34px; margin-bottom:24px;
+  }
+  h2{
+    font-family:var(--font-mono); font-size:1.32rem; color:var(--text-primary);
+    margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid var(--border-soft);
+  }
+  h3{
+    font-family:var(--font-mono); font-size:1.05rem; color:var(--text-primary);
+    margin:28px 0 12px;
+  }
+  p{margin-bottom:14px;color:var(--text-secondary);}
+
+  /* BATTLE GRID */
+  .battle-grid{
+    display:grid; grid-template-columns:minmax(0,380px) 1fr;
+    gap:32px; margin:28px 0; align-items:start;
+  }
+  @media (max-width:900px){.battle-grid{grid-template-columns:1fr;}}
+
+  /* PHONE */
+  .phone-wrap{
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    position:sticky; top:20px;
+  }
+  .phone-label{
+    font-family:var(--font-mono); font-size:.75rem; color:var(--text-muted);
+    text-transform:uppercase; letter-spacing:.08em;
+  }
+  .phone{
+    width:300px; height:600px; background:#0a0d13;
+    border:8px solid #1e2330; border-radius:36px;
+    box-shadow:0 30px 80px rgba(0,0,0,.6), inset 0 0 0 1px #2c3346;
+    position:relative; overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .phone-notch{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:110px; height:22px; background:#0a0d13;
+    border-bottom-left-radius:14px; border-bottom-right-radius:14px; z-index:10;
+  }
+  .phone-status{
+    height:32px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 22px; font-family:var(--font-mono); font-size:.62rem; color:#a3abc4;
+  }
+  .phone-status .right{display:flex;gap:4px;align-items:center;}
+
+  /* SCREEN */
+  .screen{
+    flex:1; background:#f4f6fb; color:#1a1d26;
+    display:flex; flex-direction:column; overflow:hidden;
+    font-family:var(--font-sans);
+  }
+
+  /* AppBar */
+  .appbar{
+    height:56px; flex-shrink:0; background:#ffffff;
+    border-bottom:1px solid #e3e6ee;
+    display:flex; align-items:center; gap:12px; padding:0 16px;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  .appbar .back-icon{
+    font-size:1.3rem; color:#1a1d26;
+    display:flex; align-items:center;
+  }
+  .appbar .title{font-weight:600;font-size:1rem;color:#1a1d26;}
+
+  /* BODY */
+  .body-area{
+    flex:1; padding:24px 20px; overflow-y:auto;
+    display:flex; flex-direction:column;
+  }
+
+  /* CONTACT CARD — centered, simple, one card */
+  .contact-card{
+    background:#ffffff;
+    border-radius:18px;
+    padding:28px 22px;
+    box-shadow:0 4px 20px rgba(0,0,0,.06);
+    display:flex; flex-direction:column; align-items:center;
+    text-align:center;
+  }
+
+  /* Big avatar circle */
+  .avatar-big{
+    width:96px; height:96px; border-radius:50%;
+    background:linear-gradient(135deg,#54c5f8,#b388ff);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:700; font-size:2.4rem;
+    margin-bottom:16px;
+  }
+
+  /* Name + role */
+  .contact-name{
+    font-weight:700; font-size:1.3rem; color:#1a1d26;
+    margin-bottom:4px; line-height:1.2;
+  }
+  .contact-role{
+    font-size:.85rem; color:#68708a; margin-bottom:22px;
+  }
+
+  /* THE NEW THING — a Row with Icon + Text */
+  .detail-row{
+    display:flex; align-items:center; gap:10px;
+    background:#f4f6fb;
+    border-radius:12px;
+    padding:14px 16px;
+    margin-bottom:10px;
+    width:100%;
+  }
+  .detail-row:last-of-type{margin-bottom:0;}
+  .detail-icon{
+    width:34px; height:34px; border-radius:50%;
+    background:#e6f4fe; color:#0288d1;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .detail-icon .ic-svg{width:1rem;height:1rem;}
+  .detail-text{
+    font-size:.88rem; color:#1a1d26; font-weight:500;
+    text-align:left;
+  }
+
+  /* GUIDE PANEL */
+  .guide-panel{
+    background:var(--bg-panel-alt); border:1px solid var(--border);
+    border-radius:var(--radius-md); padding:26px 28px;
+  }
+  .guide-panel h3{margin-top:0;color:var(--accent-p3);font-size:1rem;}
+  .guide-panel h4{
+    font-family:var(--font-mono); font-size:.82rem; color:var(--accent-p5);
+    text-transform:uppercase; letter-spacing:.05em; margin:20px 0 10px;
+  }
+  .guide-panel h4:first-of-type{margin-top:8px;}
+
+  .widget-list{list-style:none; margin-left:0; margin-bottom:0;}
+  .widget-list li{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:11px 0; border-bottom:1px solid var(--border-soft);
+    font-size:.9rem;
+  }
+  .widget-list li:last-child{border-bottom:none;}
+  .widget-list .wc{
+    font-family:var(--font-mono); font-size:.78rem; font-weight:600;
+    padding:3px 10px; border-radius:5px; flex-shrink:0;
+    min-width:100px; text-align:center;
+  }
+  .wc.blue{background:rgba(84,197,248,.12);color:var(--accent-p1);border:1px solid rgba(84,197,248,.3);}
+  .wc.green{background:rgba(105,240,174,.12);color:var(--accent-p2);border:1px solid rgba(105,240,174,.3);}
+  .wc.purple{background:rgba(179,136,255,.12);color:var(--accent-p4);border:1px solid rgba(179,136,255,.3);}
+  .wc.amber{background:rgba(255,213,79,.12);color:var(--accent-p5);border:1px solid rgba(255,213,79,.3);}
+  .wc.teal{background:rgba(77,208,225,.12);color:var(--accent-p3);border:1px solid rgba(77,208,225,.3);}
+  .wc.pink{background:rgba(244,143,177,.12);color:var(--accent-p7);border:1px solid rgba(244,143,177,.3);}
+  .widget-list .desc{color:var(--text-secondary);font-size:.85rem;line-height:1.55;}
+  .widget-list .desc code{font-size:.8em;}
+
+  /* TREE */
+  .tree{
+    font-family:var(--font-mono); font-size:.76rem; line-height:1.9;
+    background:var(--bg-base-2); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:16px 18px;
+    color:var(--text-secondary); overflow-x:auto; margin-bottom:8px;
+  }
+  .tree .root{color:var(--accent-p3);font-weight:600;}
+  .tree .lvl1{color:var(--accent-p4);}
+  .tree .lvl2{color:var(--accent-p2);}
+  .tree .leaf{color:var(--accent-p5);}
+  .tree .comment{color:var(--text-muted);font-style:italic;}
+
+  /* CONCEPT BOX */
+  .concept-box{
+    background:rgba(77,208,225,.06);
+    border:1px solid rgba(77,208,225,.3);
+    border-left:3px solid var(--accent-p3);
+    border-radius:var(--radius-sm);
+    padding:16px 20px; margin:18px 0;
+  }
+  .concept-box h4{
+    font-family:var(--font-mono); font-size:.82rem;
+    color:var(--accent-p3); text-transform:uppercase;
+    letter-spacing:.05em; margin-bottom:10px;
+  }
+  .concept-box p{font-size:.88rem; margin-bottom:8px; color:var(--text-secondary);}
+  .concept-box p:last-child{margin-bottom:0;}
+  .concept-box code{color:var(--accent-dart);}
+
+  /* RULES */
+  .rule{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:12px 0; border-bottom:1px solid var(--border-soft); font-size:.88rem;
+  }
+  .rule:last-child{border-bottom:none;}
+  .rule .num{
+    font-family:var(--font-mono); font-weight:700; color:var(--accent-p3);
+    flex-shrink:0; width:22px;
+  }
+  .rule .txt{color:var(--text-secondary);}
+  .rule .txt strong{color:var(--text-primary);}
+
+  /* CTA */
+  .cta-row{
+    display:flex; justify-content:center; margin-top:28px;
+    padding-top:26px; border-top:1px solid var(--border-soft);
+  }
+  .btn{
+    font-family:var(--font-mono); font-size:.95rem; text-align:center;
+    padding:16px 34px; border-radius:var(--radius-sm); text-decoration:none;
+    border:1px solid transparent; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; gap:10px;
+    transition:all .15s; letter-spacing:.02em;
+  }
+  .btn-battle{
+    background:linear-gradient(135deg,#4dd0e1,#54c5f8);
+    color:#071018; font-weight:700; border:none;
+    box-shadow:0 8px 24px rgba(77,208,225,.3);
+  }
+  .btn-battle:hover{filter:brightness(1.1); transform:translateY(-2px); box-shadow:0 12px 30px rgba(77,208,225,.4);}
+
+  /* HINT */
+  .hint-box{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-left:3px solid var(--accent-p5); border-radius:var(--radius-sm);
+    padding:16px 20px; margin:18px 0; font-size:.9rem; color:var(--text-secondary);
+  }
+  .hint-box strong{color:var(--accent-p5);}
+
+  /* LEGEND */
+  .legend{
+    display:flex; flex-wrap:wrap; gap:14px; margin-top:16px;
+    font-family:var(--font-mono); font-size:.72rem; color:var(--text-muted);
+  }
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- TOP NAV -->
+  <div class="top-nav">
+    <a href="battlelayout1.html" class="back-link">
+      <svg class="ic-svg" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to Battle Layout 1
+    </a>
+    <span class="level-tag">BATTLE LAYOUT · 2</span>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="terminal-window">
+      <div class="terminal-bar">
+        <div class="terminal-dots"><span></span><span></span><span></span></div>
+        <div class="terminal-tab active">battlelayout2/</div>
+        <div class="terminal-tab">main.dart</div>
+      </div>
+      <div class="terminal-body">
+        <p class="terminal-comment">// battle layout 2 — your first Row, one tiny step up from level 1</p>
+        <h1 class="hero-title">Battle Layout #2<span class="cursor">_</span></h1>
+        <p class="hero-sub">Level 1 was all vertical — one thing stacked on top of another. This time you add <strong>one</strong> new idea: a <code>Row</code> that puts an icon next to some text. That's it. Same project, same rules, tiny step up.</p>
+        <div class="terminal-line"><span class="prompt">$</span>flutter create battle_layout_02</div>
+        <p class="terminal-output">Project created ✓ — open main.dart and build the layout below</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- MISSION -->
+  <div class="panel">
+    <h2>Mission: Contact Card</h2>
+    <p>Below is the target wireframe. It's a simple contact card — a big avatar circle, a name, a role, then two detail rows, each with an icon next to text. Rebuild it in Flutter using only the widgets listed on the right.</p>
+
+    <div class="battle-grid">
+
+      <!-- LEFT: PHONE -->
+      <div class="phone-wrap">
+        <div class="phone-label">◉ Target wireframe</div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-status">
+            <span>9:41</span>
+            <span class="right">●●● ▂▄▆ ▮</span>
+          </div>
+          <div class="screen">
+
+            <!-- AppBar -->
+            <div class="appbar">
+              <span class="back-icon">
+                <svg class="ic-svg" viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+              </span>
+              <span class="title">Contact</span>
+            </div>
+
+            <!-- Body — ONE card, centered -->
+            <div class="body-area">
+
+              <div class="contact-card">
+
+                <!-- Big avatar -->
+                <div class="avatar-big">A</div>
+
+                <!-- Name + role -->
+                <div class="contact-name">Alice Johnson</div>
+                <div class="contact-role">Flutter Developer</div>
+
+                <!-- Detail row 1 — email -->
+                <div class="detail-row">
+                  <div class="detail-icon">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>
+                  </div>
+                  <span class="detail-text">alice@example.com</span>
+                </div>
+
+                <!-- Detail row 2 — phone -->
+                <div class="detail-row">
+                  <div class="detail-icon">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7 12.8 12.8 0 0 0 .7 2.8 2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5 12.8 12.8 0 0 0 2.8.7 2 2 0 0 1 1.7 2z"/></svg>
+                  </div>
+                  <span class="detail-text">+234 801 234 5678</span>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="legend">
+          <span><span class="sw" style="background:#54c5f8;"></span>Avatar</span>
+          <span><span class="sw" style="background:#b388ff;"></span>Name / role</span>
+          <span><span class="sw" style="background:#4dd0e1;"></span>Detail rows (NEW)</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: GUIDE -->
+      <div class="guide-panel">
+        <h3>🛠 Your widget toolbox</h3>
+        <p style="font-size:.9rem;margin-bottom:8px;">You may only use these widgets. No others. Everything you need is here.</p>
+
+        <ul class="widget-list">
+          <li>
+            <span class="wc blue">Scaffold</span>
+            <span class="desc">Root screen container — provides the light background.</span>
+          </li>
+          <li>
+            <span class="wc blue">AppBar</span>
+            <span class="desc">Top bar. Put a <code>Row</code> inside its <code>title</code> to hold the back icon and the word "Contact".</span>
+          </li>
+          <li>
+            <span class="wc purple">Column</span>
+            <span class="desc">Vertical stack — the whole card lives inside one.</span>
+          </li>
+          <li>
+            <span class="wc green">Row</span>
+            <span class="desc"><strong>The new idea.</strong> Puts an icon and text side by side in each detail row.</span>
+          </li>
+          <li>
+            <span class="wc pink">Container</span>
+            <span class="desc">The white card, the avatar circle, and the little icon circles.</span>
+          </li>
+          <li>
+            <span class="wc amber">Text</span>
+            <span class="desc">Name, role, and the detail text next to each icon.</span>
+          </li>
+          <li>
+            <span class="wc purple">SizedBox</span>
+            <span class="desc">Spacing between widgets and between children in a Row.</span>
+          </li>
+          <li>
+            <span class="wc amber">Padding</span>
+            <span class="desc">Inner spacing inside the card and around the body.</span>
+          </li>
+          <li>
+            <span class="wc teal">Icon</span>
+            <span class="desc">The back arrow, the email icon, the phone icon. Use <code>Icon(Icons.xxx)</code> — never emoji.</span>
+          </li>
+        </ul>
+
+        <div class="concept-box">
+          <h4>⚡ The one new idea in this battle</h4>
+          <p><strong>A Row with an Icon and a Text.</strong> You already know how to stack things vertically with a <code>Column</code>. Now you'll put two things side by side using a <code>Row</code>: an icon on the left, some text on the right. That's how the two detail rows in the card are built.</p>
+          <p>And remember: in Flutter you never type emoji. You type <code>Icon(Icons.email)</code>, <code>Icon(Icons.phone)</code>, <code>Icon(Icons.arrow_back)</code>. Icons are widgets — they take a <code>size</code> and a <code>color</code>.</p>
+        </div>
+
+        <!-- ICON MAPPING -->
+        <h4>🎯 Icon mapping (wireframe → Flutter)</h4>
+        <div class="tree" style="line-height:2;">
+          <div><span class="comment">// back arrow in the AppBar</span></div>
+          <div>wireframe <span class="leaf">←</span> &nbsp;→&nbsp; <span class="root">Icon(Icons.arrow_back)</span></div>
+          <div>&nbsp;</div>
+          <div><span class="comment">// email icon in the first detail row</span></div>
+          <div>wireframe <span class="leaf">✉</span> &nbsp;→&nbsp; <span class="root">Icon(Icons.email)</span></div>
+          <div>&nbsp;</div>
+          <div><span class="comment">// phone icon in the second detail row</span></div>
+          <div>wireframe <span class="leaf">☎</span> &nbsp;→&nbsp; <span class="root">Icon(Icons.phone)</span></div>
+        </div>
+
+        <h4>📐 Suggested nesting</h4>
+        <p style="font-size:.85rem;margin-bottom:10px;">This is a <em>hint</em> — not the answer. You still have to write every widget yourself.</p>
+        <div class="tree">
+          <div><span class="root">Scaffold</span></div>
+          <div>├─ <span class="lvl1">AppBar</span> <span class="comment">// Row: Icon(arrow_back) + "Contact"</span></div>
+          <div>└─ <span class="lvl1">Padding</span></div>
+          <div>&nbsp;&nbsp;&nbsp;└─ <span class="lvl1">Column</span> <span class="comment">// the card</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="lvl2">Container</span> <span class="comment">// avatar circle</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(height:16)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">Text</span> <span class="comment">// name</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">Text</span> <span class="comment">// role</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(height:22)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="lvl2">Row</span> <span class="comment">// ← NEW: email row</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;├─ <span class="leaf">Icon(email)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;├─ <span class="leaf">SizedBox(width:10)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;└─ <span class="leaf">Text</span> <span class="comment">// "alice@example.com"</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(height:10)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="lvl2">Row</span> <span class="comment">// ← NEW: phone row</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">Icon(phone)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(width:10)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="leaf">Text</span> <span class="comment">// "+234 801 234 5678"</span></div>
+        </div>
+        <p style="font-size:.8rem;color:var(--text-muted);">You don't have to match this tree exactly — any tree that produces the same visual result is correct.</p>
+
+        <h4>📋 Rules of the battle</h4>
+        <div class="rule">
+          <span class="num">1</span>
+          <span class="txt">Every widget you use must come from the toolbox above.</span>
+        </div>
+        <div class="rule">
+          <span class="num">2</span>
+          <span class="txt">Match the wireframe <strong>visually</strong> — same layout, same spacing, same colors.</span>
+        </div>
+        <div class="rule">
+          <span class="num">3</span>
+          <span class="txt">Use real Flutter icons — <code>Icon(Icons.xxx)</code>. Never emoji characters.</span>
+        </div>
+        <div class="rule">
+          <span class="num">4</span>
+          <span class="txt">No <code>onPressed</code> needed — this is a static layout battle.</span>
+        </div>
+        <div class="rule">
+          <span class="num">5</span>
+          <span class="txt">When it matches, take a screenshot and submit. Battle Layout 3 unlocks.</span>
+        </div>
+
+        <!-- SINGLE BATTLE BUTTON -->
+        <div class="cta-row">
+          <a href="battlelayout3.html" class="btn btn-battle">
+            <svg class="ic-svg" viewBox="0 0 24 24" style="width:16px;height:16px;"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            Battle Layout 3
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- HINT -->
+    <div class="hint-box">
+      <strong>💡 Battle tip:</strong> Build the whole card vertically first — avatar, name, role — just like Battle Layout 1. Then, for each detail row, stop and say: "this is one icon and one text, sitting next to each other." That's a <code>Row</code>. Two children: an <code>Icon</code>, a <code>SizedBox(width: 10)</code>, and a <code>Text</code>. Done. Repeat for the phone row.
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  (function typeTitle(){
+    const el = document.getElementById('typedTitle');
+    if(!el) return;
+  })();
+</script>
+</body>
+</html>

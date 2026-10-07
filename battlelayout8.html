@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battle Layout 8 — Flutter Mastery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-base:#0d1016; --bg-base-2:#12151d; --bg-panel:#161a24;
+    --bg-panel-alt:#1c2130; --bg-elevated:#232838;
+    --border:#2c3346; --border-soft:#232938;
+    --text-primary:#e9ecf5; --text-secondary:#a3abc4; --text-muted:#68708a;
+    --accent-flutter:#54c5f8; --accent-dart:#40c4ff;
+    --accent-p1:#54c5f8; --accent-p2:#69f0ae; --accent-p3:#4dd0e1;
+    --accent-p4:#b388ff; --accent-p5:#ffd54f; --accent-p6:#ffab40; --accent-p7:#f48fb1;
+    --radius-sm:6px; --radius-md:10px; --radius-lg:16px;
+    --font-mono:'JetBrains Mono','Courier New',monospace;
+    --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:var(--font-sans); line-height:1.65; color:var(--text-primary);
+    background:
+      radial-gradient(circle at 10% 4%, rgba(105,240,174,.09), transparent 42%),
+      radial-gradient(circle at 90% 12%, rgba(77,208,225,.07), transparent 42%),
+      radial-gradient(circle at 50% 97%, rgba(84,197,248,.06), transparent 45%),
+      var(--bg-base);
+    min-height:100vh;
+  }
+  .page{max-width:1280px;margin:0 auto;padding:32px 20px 64px;}
+  a{color:inherit;}
+  code{
+    font-family:var(--font-mono); background:rgba(255,255,255,.06);
+    padding:2px 7px; border-radius:4px; font-size:.88em; color:var(--accent-dart);
+  }
+  :focus-visible{outline:2px solid var(--accent-flutter);outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+
+  .ic-svg{width:1em;height:1em;display:inline-block;vertical-align:-0.125em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+  /* TOP NAV */
+  .top-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+  .back-link{
+    font-family:var(--font-mono); font-size:.85rem; color:var(--text-muted);
+    text-decoration:none; display:inline-flex; align-items:center; gap:6px; transition:color .15s;
+  }
+  .back-link:hover{color:var(--text-primary);}
+  .level-tag{
+    font-family:var(--font-mono); font-size:.78rem; color:var(--accent-p2);
+    background:rgba(105,240,174,.1); padding:4px 14px; border-radius:20px;
+    border:1px solid rgba(105,240,174,.3);
+  }
+
+  /* HERO */
+  .hero{margin-bottom:26px;}
+  .terminal-window{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:var(--radius-lg); overflow:hidden;
+    box-shadow:0 24px 70px rgba(0,0,0,.5);
+  }
+  .terminal-bar{
+    display:flex; align-items:center; gap:14px; padding:13px 18px;
+    background:var(--bg-base-2); border-bottom:1px solid var(--border-soft);
+  }
+  .terminal-dots{display:flex;gap:7px;}
+  .terminal-dots span{width:11px;height:11px;border-radius:50%;display:block;}
+  .terminal-dots span:nth-child(1){background:#ec6a5e;}
+  .terminal-dots span:nth-child(2){background:#f4bf4f;}
+  .terminal-dots span:nth-child(3){background:#61c454;}
+  .terminal-tab{
+    font-family:var(--font-mono); font-size:.78rem; color:var(--text-muted);
+    padding:4px 12px; background:var(--bg-panel-alt); border-radius:5px;
+  }
+  .terminal-tab.active{color:var(--accent-dart);border:1px solid var(--border);}
+  .terminal-body{padding:42px 46px 38px;}
+  .terminal-comment{font-family:var(--font-mono);font-size:.85rem;color:var(--text-muted);margin-bottom:14px;}
+  .hero-title{
+    font-family:var(--font-mono); font-weight:700;
+    font-size:clamp(1.7rem,4vw,2.7rem); letter-spacing:-.02em; margin-bottom:18px;
+  }
+  .cursor{display:inline-block;color:var(--accent-p2);animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .hero-sub{font-size:1.05rem;color:var(--text-secondary);max-width:720px;margin-bottom:26px;}
+  .terminal-line{font-family:var(--font-mono);font-size:.92rem;color:var(--text-secondary);margin-bottom:6px;}
+  .terminal-line .prompt{color:var(--accent-p2);margin-right:8px;}
+  .terminal-output{
+    font-family:var(--font-mono); font-size:.86rem; color:var(--text-muted);
+    margin-bottom:26px; padding-left:20px;
+  }
+
+  /* PANEL */
+  .panel{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:var(--radius-lg); padding:34px; margin-bottom:24px;
+  }
+  h2{
+    font-family:var(--font-mono); font-size:1.32rem; color:var(--text-primary);
+    margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid var(--border-soft);
+  }
+  h3{
+    font-family:var(--font-mono); font-size:1.05rem; color:var(--text-primary);
+    margin:28px 0 12px;
+  }
+  p{margin-bottom:14px;color:var(--text-secondary);}
+
+  /* BATTLE GRID */
+  .battle-grid{
+    display:grid; grid-template-columns:minmax(0,380px) 1fr;
+    gap:32px; margin:28px 0; align-items:start;
+  }
+  @media (max-width:900px){.battle-grid{grid-template-columns:1fr;}}
+
+  /* PHONE */
+  .phone-wrap{
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    position:sticky; top:20px;
+  }
+  .phone-label{
+    font-family:var(--font-mono); font-size:.75rem; color:var(--text-muted);
+    text-transform:uppercase; letter-spacing:.08em;
+  }
+  .phone{
+    width:300px; height:600px; background:#0a0d13;
+    border:8px solid #1e2330; border-radius:36px;
+    box-shadow:0 30px 80px rgba(0,0,0,.6), inset 0 0 0 1px #2c3346;
+    position:relative; overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .phone-notch{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:110px; height:22px; background:#0a0d13;
+    border-bottom-left-radius:14px; border-bottom-right-radius:14px; z-index:10;
+  }
+  .phone-status{
+    height:32px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 22px; font-family:var(--font-mono); font-size:.62rem; color:#a3abc4;
+  }
+  .phone-status .right{display:flex;gap:4px;align-items:center;}
+
+  /* SCREEN */
+  .screen{
+    flex:1; background:#f4f6fb; color:#1a1d26;
+    display:flex; flex-direction:column; overflow:hidden;
+    font-family:var(--font-sans);
+  }
+
+  /* BODY — centered content */
+  .body-area{
+    flex:1; padding:24px 18px;
+    display:flex; flex-direction:column;
+    justify-content:center;
+    overflow-y:auto;
+  }
+
+  /* TITLE BLOCK */
+  .page-title{
+    font-weight:700; font-size:1.25rem; color:#1a1d26;
+    text-align:center;
+    margin-bottom:6px;
+  }
+  .page-sub{
+    font-size:.85rem; color:#68708a;
+    text-align:center;
+    margin-bottom:26px;
+  }
+
+  /* BIG COUNTER CARD */
+  .counter-card{
+    background:#ffffff;
+    border-radius:20px;
+    padding:36px 24px;
+    box-shadow:0 6px 24px rgba(0,0,0,.06);
+    text-align:center;
+    margin-bottom:20px;
+  }
+  .counter-label{
+    font-size:.72rem; color:#68708a;
+    text-transform:uppercase; letter-spacing:.08em;
+    margin-bottom:10px;
+  }
+  .counter-value{
+    font-family:var(--font-mono);
+    font-weight:700; font-size:4rem; color:#1a1d26;
+    line-height:1;
+    transition:transform .12s ease;
+  }
+  .counter-value.pop{transform:scale(1.15);}
+
+  /* BUTTONS ROW */
+  .btn-row{
+    display:flex; gap:12px;
+  }
+  .btn-circle{
+    flex:1;
+    height:60px;
+    border-radius:14px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    font-family:var(--font-sans);
+    font-weight:700;
+    font-size:.95rem;
+    color:#0a0d13;
+    cursor:pointer;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .08s ease, filter .12s ease;
+  }
+  .btn-circle:active{transform:scale(.95);}
+  .btn-circle.minus{
+    background:#fce4ec; color:#c2185b;
+  }
+  .btn-circle.plus{
+    background:#69f0ae; color:#0a0d13;
+    box-shadow:0 6px 16px rgba(105,240,174,.35);
+  }
+  .btn-circle .ic-svg{width:1.1rem;height:1.1rem;}
+
+  /* GUIDE PANEL */
+  .guide-panel{
+    background:var(--bg-panel-alt); border:1px solid var(--border);
+    border-radius:var(--radius-md); padding:26px 28px;
+  }
+  .guide-panel h3{margin-top:0;color:var(--accent-p2);font-size:1rem;}
+  .guide-panel h4{
+    font-family:var(--font-mono); font-size:.82rem; color:var(--accent-p5);
+    text-transform:uppercase; letter-spacing:.05em; margin:20px 0 10px;
+  }
+  .guide-panel h4:first-of-type{margin-top:8px;}
+
+  .widget-list{list-style:none; margin-left:0; margin-bottom:0;}
+  .widget-list li{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:11px 0; border-bottom:1px solid var(--border-soft);
+    font-size:.9rem;
+  }
+  .widget-list li:last-child{border-bottom:none;}
+  .widget-list .wc{
+    font-family:var(--font-mono); font-size:.78rem; font-weight:600;
+    padding:3px 10px; border-radius:5px; flex-shrink:0;
+    min-width:150px; text-align:center;
+  }
+  .wc.blue{background:rgba(84,197,248,.12);color:var(--accent-p1);border:1px solid rgba(84,197,248,.3);}
+  .wc.green{background:rgba(105,240,174,.12);color:var(--accent-p2);border:1px solid rgba(105,240,174,.3);}
+  .wc.purple{background:rgba(179,136,255,.12);color:var(--accent-p4);border:1px solid rgba(179,136,255,.3);}
+  .wc.amber{background:rgba(255,213,79,.12);color:var(--accent-p5);border:1px solid rgba(255,213,79,.3);}
+  .wc.teal{background:rgba(77,208,225,.12);color:var(--accent-p3);border:1px solid rgba(77,208,225,.3);}
+  .wc.pink{background:rgba(244,143,177,.12);color:var(--accent-p7);border:1px solid rgba(244,143,177,.3);}
+  .widget-list .desc{color:var(--text-secondary);font-size:.85rem;line-height:1.55;}
+  .widget-list .desc code{font-size:.8em;}
+
+  /* TREE */
+  .tree{
+    font-family:var(--font-mono); font-size:.76rem; line-height:1.9;
+    background:var(--bg-base-2); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:16px 18px;
+    color:var(--text-secondary); overflow-x:auto; margin-bottom:8px;
+  }
+  .tree .root{color:var(--accent-p2);font-weight:600;}
+  .tree .lvl1{color:var(--accent-p6);}
+  .tree .lvl2{color:var(--accent-p3);}
+  .tree .leaf{color:var(--accent-p5);}
+  .tree .comment{color:var(--text-muted);font-style:italic;}
+
+  /* CODE PREVIEW */
+  .code-preview{
+    font-family:var(--font-mono); font-size:.78rem; line-height:1.75;
+    background:var(--bg-base-2); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:16px 18px;
+    color:var(--text-secondary); overflow-x:auto; margin-bottom:8px;
+    white-space:pre;
+  }
+  .code-preview .kw{color:var(--accent-p4);}
+  .code-preview .cls{color:var(--accent-p5);}
+  .code-preview .str{color:var(--accent-p2);}
+  .code-preview .cm{color:var(--text-muted);font-style:italic;}
+  .code-preview .fn{color:var(--accent-flutter);}
+
+  /* CONCEPT BOX */
+  .concept-box{
+    background:rgba(105,240,174,.06);
+    border:1px solid rgba(105,240,174,.3);
+    border-left:3px solid var(--accent-p2);
+    border-radius:var(--radius-sm);
+    padding:16px 20px; margin:18px 0;
+  }
+  .concept-box h4{
+    font-family:var(--font-mono); font-size:.82rem;
+    color:var(--accent-p2); text-transform:uppercase;
+    letter-spacing:.05em; margin-bottom:10px;
+  }
+  .concept-box p{font-size:.88rem; margin-bottom:8px; color:var(--text-secondary);}
+  .concept-box p:last-child{margin-bottom:0;}
+  .concept-box code{color:var(--accent-dart);}
+
+  /* RULES */
+  .rule{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:12px 0; border-bottom:1px solid var(--border-soft); font-size:.88rem;
+  }
+  .rule:last-child{border-bottom:none;}
+  .rule .num{
+    font-family:var(--font-mono); font-weight:700; color:var(--accent-p2);
+    flex-shrink:0; width:22px;
+  }
+  .rule .txt{color:var(--text-secondary);}
+  .rule .txt strong{color:var(--text-primary);}
+
+  /* CTA */
+  .cta-row{
+    display:flex; justify-content:center; margin-top:28px;
+    padding-top:26px; border-top:1px solid var(--border-soft);
+  }
+  .btn{
+    font-family:var(--font-mono); font-size:.95rem; text-align:center;
+    padding:16px 34px; border-radius:var(--radius-sm); text-decoration:none;
+    border:1px solid transparent; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; gap:10px;
+    transition:all .15s; letter-spacing:.02em;
+  }
+  .btn-battle{
+    background:linear-gradient(135deg,#69f0ae,#4dd0e1);
+    color:#0a0d13; font-weight:700; border:none;
+    box-shadow:0 8px 24px rgba(105,240,174,.3);
+  }
+  .btn-battle:hover{filter:brightness(1.08); transform:translateY(-2px); box-shadow:0 12px 30px rgba(105,240,174,.4);}
+
+  /* HINT */
+  .hint-box{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-left:3px solid var(--accent-p5); border-radius:var(--radius-sm);
+    padding:16px 20px; margin:18px 0; font-size:.9rem; color:var(--text-secondary);
+  }
+  .hint-box strong{color:var(--accent-p5);}
+
+  /* LEGEND */
+  .legend{
+    display:flex; flex-wrap:wrap; gap:14px; margin-top:16px;
+    font-family:var(--font-mono); font-size:.72rem; color:var(--text-muted);
+  }
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block;}
+
+  /* solution reveal */
+  .solution-details{
+    margin-top:20px; border-top:1px solid var(--border-soft); padding-top:16px;
+  }
+  .solution-details summary{
+    font-family:var(--font-mono); font-size:.85rem; color:var(--accent-p3);
+    cursor:pointer; user-select:none; display:inline-block;
+    padding:6px 0; transition:color .15s;
+  }
+  .solution-details summary:hover{color:var(--accent-p2);}
+  .solution-details[open] summary{margin-bottom:12px;}
+  .solution-code{
+    font-family:var(--font-mono); font-size:.75rem; line-height:1.7;
+    background:var(--bg-base-2); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:16px 18px;
+    color:var(--text-secondary); overflow-x:auto;
+    white-space:pre;
+  }
+  .solution-code .kw{color:var(--accent-p4);}
+  .solution-code .cls{color:var(--accent-p5);}
+  .solution-code .fn{color:var(--accent-flutter);}
+  .solution-code .cm{color:var(--text-muted);font-style:italic;}
+  .solution-code .num{color:var(--accent-p7);}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- TOP NAV -->
+  <div class="top-nav">
+    <a href="battlelayout7.html" class="back-link">
+      <svg class="ic-svg" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to Battle Layout 7
+    </a>
+    <span class="level-tag">BATTLE LAYOUT · 8</span>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="terminal-window">
+      <div class="terminal-bar">
+        <div class="terminal-dots"><span></span><span></span><span></span></div>
+        <div class="terminal-tab active">battlelayout8/</div>
+        <div class="terminal-tab">main.dart</div>
+      </div>
+      <div class="terminal-body">
+        <p class="terminal-comment">// battle layout 8 — your first StatefulWidget, kept simple</p>
+        <h1 class="hero-title">Battle Layout #8<span class="cursor">_</span></h1>
+        <p class="hero-sub">Every battle so far has been a frozen screen. This one moves. A big number in the middle, two buttons below it, and the number changes when you tap. That's <code>StatefulWidget</code> + <code>setState</code> — the simplest possible version.</p>
+        <div class="terminal-line"><span class="prompt">$</span>flutter create battle_layout_08</div>
+        <p class="terminal-output">Project created ✓ — open main.dart and build the layout below</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- MISSION -->
+  <div class="panel">
+    <h2>Mission: Tap Counter</h2>
+    <p>Below is the target wireframe. It's a simple screen — a small title, a big number in a white card, and two buttons at the bottom: a "−1" and a "+1". Tapping either button changes the number. <strong style="color:var(--accent-p2);">The demo below is live — try clicking Minus and Plus.</strong></p>
+
+    <div class="battle-grid">
+
+      <!-- LEFT: PHONE -->
+      <div class="phone-wrap">
+        <div class="phone-label">◉ Live demo — click the buttons</div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-status">
+            <span>9:41</span>
+            <span class="right">●●● ▂▄▆ ▮</span>
+          </div>
+          <div class="screen">
+
+            <!-- Body only — no AppBar -->
+            <div class="body-area">
+
+              <!-- Title block -->
+              <div class="page-title">Tap Counter</div>
+              <div class="page-sub">Use the buttons below</div>
+
+              <!-- Big counter card -->
+              <div class="counter-card">
+                <div class="counter-label">Count</div>
+                <div class="counter-value" id="countValue">7</div>
+              </div>
+
+              <!-- Two buttons -->
+              <div class="btn-row">
+                <div class="btn-circle minus" id="btnMinus" role="button" tabindex="0" aria-label="Decrease count">
+                  <svg class="ic-svg" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+                  Minus
+                </div>
+                <div class="btn-circle plus" id="btnPlus" role="button" tabindex="0" aria-label="Increase count">
+                  <svg class="ic-svg" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                  Plus
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="legend">
+          <span><span class="sw" style="background:#54c5f8;"></span>Title</span>
+          <span><span class="sw" style="background:#69f0ae;"></span>Counter card</span>
+          <span><span class="sw" style="background:#f48fb1;"></span>Buttons (tappable)</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: GUIDE -->
+      <div class="guide-panel">
+        <h3>🛠 Your widget toolbox</h3>
+        <p style="font-size:.9rem;margin-bottom:8px;">You may only use these widgets. No others. Everything you need is here.</p>
+
+        <ul class="widget-list">
+          <li>
+            <span class="wc blue">Scaffold</span>
+            <span class="desc">Root screen container. Still <strong>no AppBar</strong>.</span>
+          </li>
+          <li>
+            <span class="wc green">StatefulWidget</span>
+            <span class="desc"><strong>The new idea.</strong> A widget that can hold changeable state — in this case, one number.</span>
+          </li>
+          <li>
+            <span class="wc green">setState</span>
+            <span class="desc"><strong>The other new idea.</strong> Tells Flutter "the number changed — please redraw."</span>
+          </li>
+          <li>
+            <span class="wc teal">GestureDetector</span>
+            <span class="desc">Wraps each button so it can respond to taps. <code>onTap:</code> runs your code.</span>
+          </li>
+          <li>
+            <span class="wc purple">Column</span>
+            <span class="desc">Vertical stack: title, subtitle, counter card, button row.</span>
+          </li>
+          <li>
+            <span class="wc green">Row</span>
+            <span class="desc">Puts the two buttons side by side at the bottom.</span>
+          </li>
+          <li>
+            <span class="wc pink">Container</span>
+            <span class="desc">The white counter card, and the two rounded button backgrounds.</span>
+          </li>
+          <li>
+            <span class="wc amber">Text</span>
+            <span class="desc">Title, subtitle, "Count" label, the big number, and the button labels.</span>
+          </li>
+          <li>
+            <span class="wc purple">SizedBox</span>
+            <span class="desc">Spacing between the widgets.</span>
+          </li>
+          <li>
+            <span class="wc amber">Padding</span>
+            <span class="desc">Inner spacing around the whole body.</span>
+          </li>
+          <li>
+            <span class="wc teal">Icon</span>
+            <span class="desc">A minus and a plus inside the buttons. <code>Icon(Icons.remove)</code> and <code>Icon(Icons.add)</code>.</span>
+          </li>
+        </ul>
+
+        <div class="concept-box">
+          <h4>⚡ The two new ideas in this battle</h4>
+          <p><strong>1. <code>StatefulWidget</code>.</strong> Every widget you've written so far is a <code>StatelessWidget</code> — it can't change. A <code>StatefulWidget</code> holds a <em>state object</em> with variables that can change over time. Here, the state is one thing: <code>int count = 0</code>.</p>
+          <p><strong>2. <code>setState</code>.</strong> Inside a <code>StatefulWidget</code>, the only way to change state is to wrap the change in <code>setState(() { ... })</code>. This tells Flutter "something changed — redraw this widget." If you change the variable without <code>setState</code>, the screen does <em>not</em> update. That's the number one beginner mistake.</p>
+          <p>That's it. One number, two buttons. No lists, no filtering, no data. Just tap → <code>setState</code> → number updates.</p>
+        </div>
+
+        <!-- CODE PREVIEW -->
+        <h4>📎 Shape of the code (skeleton — you fill in the details)</h4>
+        <div class="code-preview"><span class="cm">// 1. the screen is a StatefulWidget</span>
+<span class="kw">class</span> <span class="cls">CounterScreen</span> <span class="kw">extends</span> <span class="cls">StatefulWidget</span> {
+  <span class="kw">const</span> <span class="cls">CounterScreen</span>({<span class="kw">super</span>.key});
+  <span class="fn">@override</span>
+  <span class="cls">State</span>&lt;<span class="cls">CounterScreen</span>&gt; <span class="fn">createState</span>() =&gt; <span class="cls">_CounterScreenState</span>();
+}
+
+<span class="kw">class</span> <span class="cls">_CounterScreenState</span> <span class="kw">extends</span> <span class="cls">State</span>&lt;<span class="cls">CounterScreen</span>&gt; {
+  <span class="cm">// 2. the state — ONE number</span>
+  <span class="kw">int</span> count = 7;
+
+  <span class="fn">@override</span>
+  <span class="cls">Widget</span> <span class="fn">build</span>(<span class="cls">BuildContext</span> context) {
+    <span class="kw">return</span> <span class="cls">Scaffold</span>(
+      body: <span class="cm">/* Column: title, card, button row — all the widgets you already know */</span>,
+    );
+  }
+}
+
+<span class="cm">// 3. each button is a GestureDetector that calls setState</span>
+<span class="cls">GestureDetector</span>(
+  onTap: () =&gt; <span class="fn">setState</span>(() =&gt; count = count + 1),
+  child: <span class="cm">/* button Container with Icon + Text */</span>,
+)</div>
+
+        <h4>📐 Suggested nesting</h4>
+        <p style="font-size:.85rem;margin-bottom:10px;">This is a <em>hint</em> — not the answer. You still have to write every widget yourself.</p>
+        <div class="tree">
+          <div><span class="root">CounterScreen</span> <span class="kw">extends</span> StatefulWidget</div>
+          <div>&nbsp;&nbsp;&nbsp;└─ <span class="root">_CounterScreenState</span> <span class="kw">extends</span> State</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">int count = 7</span> <span class="comment">// the state</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="lvl1">build()</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="root">Scaffold</span> <span class="comment">// no AppBar</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="lvl1">Padding</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="lvl1">Column</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">Text</span> <span class="comment">// title</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">Text</span> <span class="comment">// subtitle</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(height:26)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="lvl2">Container</span> <span class="comment">// counter card (label + big value)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(height:20)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="lvl2">Row</span> <span class="comment">// two buttons</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">GestureDetector</span> <span class="comment">// minus button</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(width:12)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="leaf">GestureDetector</span> <span class="comment">// plus button</span></div>
+        </div>
+        <p style="font-size:.8rem;color:var(--text-muted);">You don't have to match this tree exactly — any tree that produces the same visual result is correct.</p>
+
+        <h4>📋 Rules of the battle</h4>
+        <div class="rule">
+          <span class="num">1</span>
+          <span class="txt">Every widget you use must come from the toolbox above.</span>
+        </div>
+        <div class="rule">
+          <span class="num">2</span>
+          <span class="txt"><strong>No AppBar.</strong> The <code>Scaffold</code> only has a <code>body:</code>.</span>
+        </div>
+        <div class="rule">
+          <span class="num">3</span>
+          <span class="txt">The screen must be a <strong><code>StatefulWidget</code></strong> — not a stateless one.</span>
+        </div>
+        <div class="rule">
+          <span class="num">4</span>
+          <span class="txt">Tapping a button must call <code>setState</code>. Never change the count without it.</span>
+        </div>
+        <div class="rule">
+          <span class="num">5</span>
+          <span class="txt">No lists. No data. Just one number and two buttons.</span>
+        </div>
+        <div class="rule">
+          <span class="num">6</span>
+          <span class="txt">Match the wireframe visually — same colors, same shapes.</span>
+        </div>
+        <div class="rule">
+          <span class="num">7</span>
+          <span class="txt">Start the counter at <strong>7</strong> (not 0), to match the wireframe.</span>
+        </div>
+
+        <!-- SOLUTION REVEAL (optional) -->
+        <details class="solution-details">
+          <summary>▸ Show full Flutter solution (try it yourself first!)</summary>
+          <pre class="solution-code"><span class="kw">import</span> <span class="str">'package:flutter/material.dart'</span>;
+
+<span class="kw">void</span> <span class="fn">main</span>() =&gt; <span class="fn">runApp</span>(<span class="kw">const</span> <span class="cls">MyApp</span>());
+
+<span class="kw">class</span> <span class="cls">MyApp</span> <span class="kw">extends</span> <span class="cls">StatelessWidget</span> {
+  <span class="kw">const</span> <span class="cls">MyApp</span>({<span class="kw">super</span>.key});
+  <span class="fn">@override</span>
+  <span class="cls">Widget</span> <span class="fn">build</span>(<span class="cls">BuildContext</span> context) {
+    <span class="kw">return</span> <span class="cls">MaterialApp</span>(
+      title: <span class="str">'Tap Counter'</span>,
+      debugShowCheckedModeBanner: <span class="kw">false</span>,
+      home: <span class="kw">const</span> <span class="cls">CounterScreen</span>(),
+    );
+  }
+}
+
+<span class="kw">class</span> <span class="cls">CounterScreen</span> <span class="kw">extends</span> <span class="cls">StatefulWidget</span> {
+  <span class="kw">const</span> <span class="cls">CounterScreen</span>({<span class="kw">super</span>.key});
+  <span class="fn">@override</span>
+  <span class="cls">State</span>&lt;<span class="cls">CounterScreen</span>&gt; <span class="fn">createState</span>() =&gt; <span class="cls">_CounterScreenState</span>();
+}
+
+<span class="kw">class</span> <span class="cls">_CounterScreenState</span> <span class="kw">extends</span> <span class="cls">State</span>&lt;<span class="cls">CounterScreen</span>&gt; {
+  <span class="kw">int</span> count = <span class="num">7</span>;
+
+  <span class="fn">@override</span>
+  <span class="cls">Widget</span> <span class="fn">build</span>(<span class="cls">BuildContext</span> context) {
+    <span class="kw">return</span> <span class="cls">Scaffold</span>(
+      backgroundColor: <span class="kw">const</span> <span class="cls">Color</span>(<span class="num">0xFFF4F6FB</span>),
+      body: <span class="cls">SafeArea</span>(
+        child: <span class="cls">Padding</span>(
+          padding: <span class="kw">const</span> <span class="cls">EdgeInsets</span>.symmetric(horizontal: <span class="num">18</span>, vertical: <span class="num">24</span>),
+          child: <span class="cls">Column</span>(
+            mainAxisAlignment: <span class="cls">MainAxisAlignment</span>.center,
+            children: [
+              <span class="kw">const</span> <span class="cls">Text</span>(
+                <span class="str">'Tap Counter'</span>,
+                style: <span class="cls">TextStyle</span>(
+                  fontSize: <span class="num">20</span>,
+                  fontWeight: <span class="cls">FontWeight</span>.bold,
+                  color: <span class="cls">Color</span>(<span class="num">0xFF1A1D26</span>),
+                ),
+              ),
+              <span class="kw">const</span> <span class="cls">SizedBox</span>(height: <span class="num">6</span>),
+              <span class="kw">const</span> <span class="cls">Text</span>(
+                <span class="str">'Use the buttons below'</span>,
+                style: <span class="cls">TextStyle</span>(
+                  fontSize: <span class="num">14</span>,
+                  color: <span class="cls">Color</span>(<span class="num">0xFF68708A</span>),
+                ),
+              ),
+              <span class="kw">const</span> <span class="cls">SizedBox</span>(height: <span class="num">26</span>),
+              <span class="cls">Container</span>(
+                width: <span class="kw">double</span>.infinity,
+                padding: <span class="kw">const</span> <span class="cls">EdgeInsets</span>.symmetric(vertical: <span class="num">36</span>, horizontal: <span class="num">24</span>),
+                decoration: <span class="cls">BoxDecoration</span>(
+                  color: <span class="cls">Colors</span>.white,
+                  borderRadius: <span class="cls">BorderRadius</span>.circular(<span class="num">20</span>),
+                  boxShadow: [
+                    <span class="cls">BoxShadow</span>(
+                      color: <span class="cls">Colors</span>.black.withOpacity(<span class="num">0.06</span>),
+                      blurRadius: <span class="num">24</span>,
+                      offset: <span class="kw">const</span> <span class="cls">Offset</span>(<span class="num">0</span>, <span class="num">6</span>),
+                    ),
+                  ],
+                ),
+                child: <span class="cls">Column</span>(
+                  children: [
+                    <span class="kw">const</span> <span class="cls">Text</span>(
+                      <span class="str">'COUNT'</span>,
+                      style: <span class="cls">TextStyle</span>(
+                        fontSize: <span class="num">12</span>,
+                        color: <span class="cls">Color</span>(<span class="num">0xFF68708A</span>),
+                        letterSpacing: <span class="num">1.2</span>,
+                      ),
+                    ),
+                    <span class="kw">const</span> <span class="cls">SizedBox</span>(height: <span class="num">10</span>),
+                    <span class="cls">Text</span>(
+                      <span class="str">'$count'</span>,
+                      style: <span class="kw">const</span> <span class="cls">TextStyle</span>(
+                        fontSize: <span class="num">64</span>,
+                        fontWeight: <span class="cls">FontWeight</span>.bold,
+                        color: <span class="cls">Color</span>(<span class="num">0xFF1A1D26</span>),
+                        fontFamily: <span class="str">'monospace'</span>,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              <span class="kw">const</span> <span class="cls">SizedBox</span>(height: <span class="num">20</span>),
+              <span class="cls">Row</span>(
+                children: [
+                  <span class="cls">Expanded</span>(
+                    child: <span class="cls">GestureDetector</span>(
+                      onTap: () =&gt; <span class="fn">setState</span>(() =&gt; count--),
+                      child: <span class="cls">Container</span>(
+                        height: <span class="num">60</span>,
+                        decoration: <span class="cls">BoxDecoration</span>(
+                          color: <span class="kw">const</span> <span class="cls">Color</span>(<span class="num">0xFFFCE4EC</span>),
+                          borderRadius: <span class="cls">BorderRadius</span>.circular(<span class="num">14</span>),
+                        ),
+                        child: <span class="cls">Row</span>(
+                          mainAxisAlignment: <span class="cls">MainAxisAlignment</span>.center,
+                          children: <span class="kw">const</span> [
+                            <span class="cls">Icon</span>(<span class="cls">Icons</span>.remove, color: <span class="cls">Color</span>(<span class="num">0xFFC2185B</span>)),
+                            <span class="cls">SizedBox</span>(width: <span class="num">8</span>),
+                            <span class="cls">Text</span>(
+                              <span class="str">'Minus'</span>,
+                              style: <span class="cls">TextStyle</span>(
+                                fontWeight: <span class="cls">FontWeight</span>.bold,
+                                color: <span class="cls">Color</span>(<span class="num">0xFFC2185B</span>),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  <span class="kw">const</span> <span class="cls">SizedBox</span>(width: <span class="num">12</span>),
+                  <span class="cls">Expanded</span>(
+                    child: <span class="cls">GestureDetector</span>(
+                      onTap: () =&gt; <span class="fn">setState</span>(() =&gt; count++),
+                      child: <span class="cls">Container</span>(
+                        height: <span class="num">60</span>,
+                        decoration: <span class="cls">BoxDecoration</span>(
+                          color: <span class="kw">const</span> <span class="cls">Color</span>(<span class="num">0xFF69F0AE</span>),
+                          borderRadius: <span class="cls">BorderRadius</span>.circular(<span class="num">14</span>),
+                          boxShadow: [
+                            <span class="cls">BoxShadow</span>(
+                              color: <span class="kw">const</span> <span class="cls">Color</span>(<span class="num">0xFF69F0AE</span>).withOpacity(<span class="num">0.35</span>),
+                              blurRadius: <span class="num">16</span>,
+                              offset: <span class="kw">const</span> <span class="cls">Offset</span>(<span class="num">0</span>, <span class="num">6</span>),
+                            ),
+                          ],
+                        ),
+                        child: <span class="cls">Row</span>(
+                          mainAxisAlignment: <span class="cls">MainAxisAlignment</span>.center,
+                          children: <span class="kw">const</span> [
+                            <span class="cls">Icon</span>(<span class="cls">Icons</span>.add, color: <span class="cls">Color</span>(<span class="num">0xFF0A0D13</span>)),
+                            <span class="cls">SizedBox</span>(width: <span class="num">8</span>),
+                            <span class="cls">Text</span>(
+                              <span class="str">'Plus'</span>,
+                              style: <span class="cls">TextStyle</span>(
+                                fontWeight: <span class="cls">FontWeight</span>.bold,
+                                color: <span class="cls">Color</span>(<span class="num">0xFF0A0D13</span>),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}</pre>
+        </details>
+
+        <div class="cta-row">
+          <a href="#" class="btn btn-battle">
+            <svg class="ic-svg" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+            Battle Layout 9
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HINT BOX -->
+  <div class="hint-box">
+    <strong>💡 Hint:</strong> Even though the buttons look like they could be <code>IconButton</code> or <code>ElevatedButton</code>, they aren't in the allowed toolbox — you must build them with <code>GestureDetector</code> + <code>Container</code> + <code>Icon</code> + <code>Text</code>. That's the point: understand the primitive before using the shortcut.
+  </div>
+
+</div>
+
+<!-- ===== LIVE DEMO SCRIPT — makes the phone mockup actually count ===== -->
+<script>
+  (function () {
+    let count = 7;
+
+    const valueEl  = document.getElementById('countValue');
+    const minusBtn = document.getElementById('btnMinus');
+    const plusBtn  = document.getElementById('btnPlus');
+
+    function render() {
+      valueEl.textContent = count;
+      // little pop animation
+      valueEl.classList.remove('pop');
+      void valueEl.offsetWidth; // force reflow
+      valueEl.classList.add('pop');
+    }
+
+    function dec() { count -= 1; render(); }
+    function inc() { count += 1; render(); }
+
+    // Mouse clicks
+    minusBtn.addEventListener('click', dec);
+    plusBtn.addEventListener('click', inc);
+
+    // Keyboard support (Enter / Space when focused)
+    [minusBtn, plusBtn].forEach(function (btn, i) {
+      btn.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          i === 0 ? dec() : inc();
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

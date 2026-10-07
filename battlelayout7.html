@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battle Layout 7 — Flutter Mastery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-base:#0d1016; --bg-base-2:#12151d; --bg-panel:#161a24;
+    --bg-panel-alt:#1c2130; --bg-elevated:#232838;
+    --border:#2c3346; --border-soft:#232938;
+    --text-primary:#e9ecf5; --text-secondary:#a3abc4; --text-muted:#68708a;
+    --accent-flutter:#54c5f8; --accent-dart:#40c4ff;
+    --accent-p1:#54c5f8; --accent-p2:#69f0ae; --accent-p3:#4dd0e1;
+    --accent-p4:#b388ff; --accent-p5:#ffd54f; --accent-p6:#ffab40; --accent-p7:#f48fb1;
+    --radius-sm:6px; --radius-md:10px; --radius-lg:16px;
+    --font-mono:'JetBrains Mono','Courier New',monospace;
+    --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:var(--font-sans); line-height:1.65; color:var(--text-primary);
+    background:
+      radial-gradient(circle at 10% 4%, rgba(179,136,255,.09), transparent 42%),
+      radial-gradient(circle at 90% 12%, rgba(84,197,248,.07), transparent 42%),
+      radial-gradient(circle at 50% 97%, rgba(105,240,174,.06), transparent 45%),
+      var(--bg-base);
+    min-height:100vh;
+  }
+  .page{max-width:1280px;margin:0 auto;padding:32px 20px 64px;}
+  a{color:inherit;}
+  code{
+    font-family:var(--font-mono); background:rgba(255,255,255,.06);
+    padding:2px 7px; border-radius:4px; font-size:.88em; color:var(--accent-dart);
+  }
+  :focus-visible{outline:2px solid var(--accent-flutter);outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+
+  .ic-svg{width:1em;height:1em;display:inline-block;vertical-align:-0.125em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+  /* TOP NAV */
+  .top-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+  .back-link{
+    font-family:var(--font-mono); font-size:.85rem; color:var(--text-muted);
+    text-decoration:none; display:inline-flex; align-items:center; gap:6px; transition:color .15s;
+  }
+  .back-link:hover{color:var(--text-primary);}
+  .level-tag{
+    font-family:var(--font-mono); font-size:.78rem; color:var(--accent-p4);
+    background:rgba(179,136,255,.1); padding:4px 14px; border-radius:20px;
+    border:1px solid rgba(179,136,255,.3);
+  }
+
+  /* HERO */
+  .hero{margin-bottom:26px;}
+  .terminal-window{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:var(--radius-lg); overflow:hidden;
+    box-shadow:0 24px 70px rgba(0,0,0,.5);
+  }
+  .terminal-bar{
+    display:flex; align-items:center; gap:14px; padding:13px 18px;
+    background:var(--bg-base-2); border-bottom:1px solid var(--border-soft);
+  }
+  .terminal-dots{display:flex;gap:7px;}
+  .terminal-dots span{width:11px;height:11px;border-radius:50%;display:block;}
+  .terminal-dots span:nth-child(1){background:#ec6a5e;}
+  .terminal-dots span:nth-child(2){background:#f4bf4f;}
+  .terminal-dots span:nth-child(3){background:#61c454;}
+  .terminal-tab{
+    font-family:var(--font-mono); font-size:.78rem; color:var(--text-muted);
+    padding:4px 12px; background:var(--bg-panel-alt); border-radius:5px;
+  }
+  .terminal-tab.active{color:var(--accent-dart);border:1px solid var(--border);}
+  .terminal-body{padding:42px 46px 38px;}
+  .terminal-comment{font-family:var(--font-mono);font-size:.85rem;color:var(--text-muted);margin-bottom:14px;}
+  .hero-title{
+    font-family:var(--font-mono); font-weight:700;
+    font-size:clamp(1.7rem,4vw,2.7rem); letter-spacing:-.02em; margin-bottom:18px;
+  }
+  .cursor{display:inline-block;color:var(--accent-p4);animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .hero-sub{font-size:1.05rem;color:var(--text-secondary);max-width:720px;margin-bottom:26px;}
+  .terminal-line{font-family:var(--font-mono);font-size:.92rem;color:var(--text-secondary);margin-bottom:6px;}
+  .terminal-line .prompt{color:var(--accent-p2);margin-right:8px;}
+  .terminal-output{
+    font-family:var(--font-mono); font-size:.86rem; color:var(--text-muted);
+    margin-bottom:26px; padding-left:20px;
+  }
+
+  /* PANEL */
+  .panel{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:var(--radius-lg); padding:34px; margin-bottom:24px;
+  }
+  h2{
+    font-family:var(--font-mono); font-size:1.32rem; color:var(--text-primary);
+    margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid var(--border-soft);
+  }
+  h3{
+    font-family:var(--font-mono); font-size:1.05rem; color:var(--text-primary);
+    margin:28px 0 12px;
+  }
+  p{margin-bottom:14px;color:var(--text-secondary);}
+
+  /* BATTLE GRID */
+  .battle-grid{
+    display:grid; grid-template-columns:minmax(0,380px) 1fr;
+    gap:32px; margin:28px 0; align-items:start;
+  }
+  @media (max-width:900px){.battle-grid{grid-template-columns:1fr;}}
+
+  /* PHONE */
+  .phone-wrap{
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    position:sticky; top:20px;
+  }
+  .phone-label{
+    font-family:var(--font-mono); font-size:.75rem; color:var(--text-muted);
+    text-transform:uppercase; letter-spacing:.08em;
+  }
+  .phone{
+    width:300px; height:600px; background:#0a0d13;
+    border:8px solid #1e2330; border-radius:36px;
+    box-shadow:0 30px 80px rgba(0,0,0,.6), inset 0 0 0 1px #2c3346;
+    position:relative; overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .phone-notch{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:110px; height:22px; background:#0a0d13;
+    border-bottom-left-radius:14px; border-bottom-right-radius:14px; z-index:10;
+  }
+  .phone-status{
+    height:32px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 22px; font-family:var(--font-mono); font-size:.62rem; color:#a3abc4;
+  }
+  .phone-status .right{display:flex;gap:4px;align-items:center;}
+
+  /* SCREEN */
+  .screen{
+    flex:1; background:#f4f6fb; color:#1a1d26;
+    display:flex; flex-direction:column; overflow:hidden;
+    font-family:var(--font-sans);
+  }
+
+  /* BODY */
+  .body-area{
+    flex:1; padding:22px 18px 0;
+    display:flex; flex-direction:column;
+    overflow-y:auto;
+    scrollbar-width:thin;
+    scrollbar-color:#c7ccd8 transparent;
+  }
+  .body-area::-webkit-scrollbar{width:6px;}
+  .body-area::-webkit-scrollbar-thumb{background:#c7ccd8;border-radius:3px;}
+
+  /* STAT CARD ROW — a single Row of 3 stat cards at the top */
+  .stat-row{
+    display:flex; gap:10px;
+    margin-bottom:20px;
+  }
+  .stat-card{
+    flex:1;
+    background:#ffffff;
+    border-radius:14px;
+    padding:14px 10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    text-align:center;
+  }
+  .stat-card .stat-ic{
+    width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .stat-card .stat-ic .ic-svg{width:1rem;height:1rem;}
+  .stat-card.c1 .stat-ic{background:#e6f4fe; color:#0288d1;}
+  .stat-card.c2 .stat-ic{background:#e8f5e9; color:#2e7d32;}
+  .stat-card.c3 .stat-ic{background:#fce4ec; color:#c2185b;}
+  .stat-card .stat-val{
+    font-family:var(--font-mono); font-weight:700; font-size:1.05rem; color:#1a1d26;
+    line-height:1;
+  }
+  .stat-card .stat-lbl{
+    font-size:.66rem; color:#68708a;
+    text-transform:uppercase; letter-spacing:.05em;
+  }
+
+  /* SECTION HEAD */
+  .section-head{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:14px;
+  }
+  .section-head .h-title{
+    font-weight:700; font-size:1.1rem; color:#1a1d26;
+  }
+  .section-head .h-count{
+    font-family:var(--font-mono); font-size:.72rem; color:#68708a;
+    background:#ffffff; padding:4px 10px; border-radius:20px;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+
+  /* EXPENSE LIST — same shape as before, but now these become a StatelessWidget */
+  .cards{
+    display:flex; flex-direction:column; gap:10px;
+    padding-bottom:24px;
+  }
+
+  .expense-row{
+    background:#ffffff;
+    border-radius:14px;
+    padding:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+    display:flex; align-items:center; gap:12px;
+  }
+
+  .expense-icon{
+    width:44px; height:44px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; flex-shrink:0;
+  }
+  .expense-icon .ic-svg{width:1.25rem;height:1.25rem;}
+  .expense-icon.e1{background:linear-gradient(135deg,#69f0ae,#4dd0e1);}
+  .expense-icon.e2{background:linear-gradient(135deg,#b388ff,#54c5f8);}
+  .expense-icon.e3{background:linear-gradient(135deg,#ffab40,#f48fb1);}
+  .expense-icon.e4{background:linear-gradient(135deg,#ffd54f,#ffab40);}
+  .expense-icon.e5{background:linear-gradient(135deg,#f48fb1,#b388ff);}
+
+  .expense-info{
+    flex:1;
+    display:flex; flex-direction:column;
+    text-align:left;
+    min-width:0;
+  }
+  .expense-title{
+    font-weight:600; font-size:.92rem; color:#1a1d26;
+    line-height:1.3;
+  }
+  .expense-sub{
+    font-size:.75rem; color:#68708a;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  .expense-amount{
+    font-family:var(--font-mono);
+    font-weight:700; font-size:.9rem; color:#1a1d26;
+    flex-shrink:0;
+  }
+  .expense-amount.plus{color:#2e7d32;}
+
+  /* GUIDE PANEL */
+  .guide-panel{
+    background:var(--bg-panel-alt); border:1px solid var(--border);
+    border-radius:var(--radius-md); padding:26px 28px;
+  }
+  .guide-panel h3{margin-top:0;color:var(--accent-p4);font-size:1rem;}
+  .guide-panel h4{
+    font-family:var(--font-mono); font-size:.82rem; color:var(--accent-p5);
+    text-transform:uppercase; letter-spacing:.05em; margin:20px 0 10px;
+  }
+  .guide-panel h4:first-of-type{margin-top:8px;}
+
+  .widget-list{list-style:none; margin-left:0; margin-bottom:0;}
+  .widget-list li{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:11px 0; border-bottom:1px solid var(--border-soft);
+    font-size:.9rem;
+  }
+  .widget-list li:last-child{border-bottom:none;}
+  .widget-list .wc{
+    font-family:var(--font-mono); font-size:.78rem; font-weight:600;
+    padding:3px 10px; border-radius:5px; flex-shrink:0;
+    min-width:140px; text-align:center;
+  }
+  .wc.blue{background:rgba(84,197,248,.12);color:var(--accent-p1);border:1px solid rgba(84,197,248,.3);}
+  .wc.green{background:rgba(105,240,174,.12);color:var(--accent-p2);border:1px solid rgba(105,240,174,.3);}
+  .wc.purple{background:rgba(179,136,255,.12);color:var(--accent-p4);border:1px solid rgba(179,136,255,.3);}
+  .wc.amber{background:rgba(255,213,79,.12);color:var(--accent-p5);border:1px solid rgba(255,213,79,.3);}
+  .wc.teal{background:rgba(77,208,225,.12);color:var(--accent-p3);border:1px solid rgba(77,208,225,.3);}
+  .wc.pink{background:rgba(244,143,177,.12);color:var(--accent-p7);border:1px solid rgba(244,143,177,.3);}
+  .wc.orange{background:rgba(255,171,64,.12);color:var(--accent-p6);border:1px solid rgba(255,171,64,.3);}
+  .widget-list .desc{color:var(--text-secondary);font-size:.85rem;line-height:1.55;}
+  .widget-list .desc code{font-size:.8em;}
+
+  /* TREE */
+  .tree{
+    font-family:var(--font-mono); font-size:.76rem; line-height:1.9;
+    background:var(--bg-base-2); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:16px 18px;
+    color:var(--text-secondary); overflow-x:auto; margin-bottom:8px;
+  }
+  .tree .root{color:var(--accent-p4);font-weight:600;}
+  .tree .lvl1{color:var(--accent-p6);}
+  .tree .lvl2{color:var(--accent-p3);}
+  .tree .leaf{color:var(--accent-p2);}
+  .tree .comment{color:var(--text-muted);font-style:italic;}
+
+  /* CODE PREVIEW */
+  .code-preview{
+    font-family:var(--font-mono); font-size:.78rem; line-height:1.75;
+    background:var(--bg-base-2); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:16px 18px;
+    color:var(--text-secondary); overflow-x:auto; margin-bottom:8px;
+    white-space:pre;
+  }
+  .code-preview .kw{color:var(--accent-p4);}
+  .code-preview .cls{color:var(--accent-p5);}
+  .code-preview .str{color:var(--accent-p2);}
+  .code-preview .cm{color:var(--text-muted);font-style:italic;}
+  .code-preview .fn{color:var(--accent-flutter);}
+
+  /* CONCEPT BOX */
+  .concept-box{
+    background:rgba(179,136,255,.06);
+    border:1px solid rgba(179,136,255,.3);
+    border-left:3px solid var(--accent-p4);
+    border-radius:var(--radius-sm);
+    padding:16px 20px; margin:18px 0;
+  }
+  .concept-box h4{
+    font-family:var(--font-mono); font-size:.82rem;
+    color:var(--accent-p4); text-transform:uppercase;
+    letter-spacing:.05em; margin-bottom:10px;
+  }
+  .concept-box p{font-size:.88rem; margin-bottom:8px; color:var(--text-secondary);}
+  .concept-box p:last-child{margin-bottom:0;}
+  .concept-box code{color:var(--accent-dart);}
+
+  /* RULES */
+  .rule{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:12px 0; border-bottom:1px solid var(--border-soft); font-size:.88rem;
+  }
+  .rule:last-child{border-bottom:none;}
+  .rule .num{
+    font-family:var(--font-mono); font-weight:700; color:var(--accent-p4);
+    flex-shrink:0; width:22px;
+  }
+  .rule .txt{color:var(--text-secondary);}
+  .rule .txt strong{color:var(--text-primary);}
+
+  /* CTA */
+  .cta-row{
+    display:flex; justify-content:center; margin-top:28px;
+    padding-top:26px; border-top:1px solid var(--border-soft);
+  }
+  .btn{
+    font-family:var(--font-mono); font-size:.95rem; text-align:center;
+    padding:16px 34px; border-radius:var(--radius-sm); text-decoration:none;
+    border:1px solid transparent; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; gap:10px;
+    transition:all .15s; letter-spacing:.02em;
+  }
+  .btn-battle{
+    background:linear-gradient(135deg,#b388ff,#54c5f8);
+    color:#0a0718; font-weight:700; border:none;
+    box-shadow:0 8px 24px rgba(179,136,255,.3);
+  }
+  .btn-battle:hover{filter:brightness(1.08); transform:translateY(-2px); box-shadow:0 12px 30px rgba(179,136,255,.4);}
+
+  /* HINT */
+  .hint-box{
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-left:3px solid var(--accent-p5); border-radius:var(--radius-sm);
+    padding:16px 20px; margin:18px 0; font-size:.9rem; color:var(--text-secondary);
+  }
+  .hint-box strong{color:var(--accent-p5);}
+
+  /* LEGEND */
+  .legend{
+    display:flex; flex-wrap:wrap; gap:14px; margin-top:16px;
+    font-family:var(--font-mono); font-size:.72rem; color:var(--text-muted);
+  }
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- TOP NAV -->
+  <div class="top-nav">
+    <a href="battlelayout6.html" class="back-link">
+      <svg class="ic-svg" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to Battle Layout 6
+    </a>
+    <span class="level-tag">BATTLE LAYOUT · 7</span>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="terminal-window">
+      <div class="terminal-bar">
+        <div class="terminal-dots"><span></span><span></span><span></span></div>
+        <div class="terminal-tab active">battlelayout7/</div>
+        <div class="terminal-tab">main.dart</div>
+      </div>
+      <div class="terminal-body">
+        <p class="terminal-comment">// battle layout 7 — extract the row into a StatelessWidget</p>
+        <h1 class="hero-title">Battle Layout #7<span class="cursor">_</span></h1>
+        <p class="hero-sub">You've been writing the same row shape over and over. This time you pull it out into its own widget class — a <code>StatelessWidget</code> — and reuse it inside the list. Same visuals. Better structure. This is what real Flutter code looks like.</p>
+        <div class="terminal-line"><span class="prompt">$</span>flutter create battle_layout_07</div>
+        <p class="terminal-output">Project created ✓ — open main.dart and build the layout below</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- MISSION -->
+  <div class="panel">
+    <h2>Mission: Expense Tracker</h2>
+    <p>Below is the target wireframe. It's a simple expense screen — a row of three stat cards at the top, a section header, then a list of expense rows. Each expense row has an icon on the left, a column of two texts in the middle, and an amount on the right. The row is not new. The new thing is that you will build it as its own widget class.</p>
+
+    <div class="battle-grid">
+
+      <!-- LEFT: PHONE -->
+      <div class="phone-wrap">
+        <div class="phone-label">◉ Target wireframe</div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-status">
+            <span>9:41</span>
+            <span class="right">●●● ▂▄▆ ▮</span>
+          </div>
+          <div class="screen">
+
+            <!-- Body only — no AppBar -->
+            <div class="body-area">
+
+              <!-- Stat cards row -->
+              <div class="stat-row">
+                <div class="stat-card c1">
+                  <div class="stat-ic">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  </div>
+                  <span class="stat-val">$842</span>
+                  <span class="stat-lbl">Income</span>
+                </div>
+                <div class="stat-card c2">
+                  <div class="stat-ic">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 9l-5 5-3-3-4 4"/></svg>
+                  </div>
+                  <span class="stat-val">$318</span>
+                  <span class="stat-lbl">Spent</span>
+                </div>
+                <div class="stat-card c3">
+                  <div class="stat-ic">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
+                  </div>
+                  <span class="stat-val">$524</span>
+                  <span class="stat-lbl">Balance</span>
+                </div>
+              </div>
+
+              <!-- Section head -->
+              <div class="section-head">
+                <span class="h-title">Recent Expenses</span>
+                <span class="h-count">5 items</span>
+              </div>
+
+              <!-- Expense list -->
+              <div class="cards">
+
+                <div class="expense-row">
+                  <div class="expense-icon e1">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+                  </div>
+                  <div class="expense-info">
+                    <span class="expense-title">Groceries</span>
+                    <span class="expense-sub">Jan 31 · Supermarket</span>
+                  </div>
+                  <span class="expense-amount">−$84.20</span>
+                </div>
+
+                <div class="expense-row">
+                  <div class="expense-icon e2">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 3 2 5 3 6l1 3h6l1-3c1-1 3-3 3-6a7 7 0 0 0-7-7z"/><path d="M9 18v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2"/></svg>
+                  </div>
+                  <div class="expense-info">
+                    <span class="expense-title">Restaurant</span>
+                    <span class="expense-sub">Jan 30 · Dinner with friends</span>
+                  </div>
+                  <span class="expense-amount">−$42.00</span>
+                </div>
+
+                <div class="expense-row">
+                  <div class="expense-icon e3">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><path d="M5 3h14l-1.5 18h-11L5 3z"/><path d="M9 7h6"/><path d="M9 11h6"/></svg>
+                  </div>
+                  <div class="expense-info">
+                    <span class="expense-title">Coffee</span>
+                    <span class="expense-sub">Jan 30 · Morning run</span>
+                  </div>
+                  <span class="expense-amount">−$4.50</span>
+                </div>
+
+                <div class="expense-row">
+                  <div class="expense-icon e4">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+                  </div>
+                  <div class="expense-info">
+                    <span class="expense-title">Subscription</span>
+                    <span class="expense-sub">Jan 25 · Streaming</span>
+                  </div>
+                  <span class="expense-amount">−$9.99</span>
+                </div>
+
+                <div class="expense-row">
+                  <div class="expense-icon e5">
+                    <svg class="ic-svg" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 3v6h6"/></svg>
+                  </div>
+                  <div class="expense-info">
+                    <span class="expense-title">Refund</span>
+                    <span class="expense-sub">Jan 28 · Online store</span>
+                  </div>
+                  <span class="expense-amount plus">+$22.00</span>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="legend">
+          <span><span class="sw" style="background:#54c5f8;"></span>Stat card</span>
+          <span><span class="sw" style="background:#69f0ae;"></span>Icon</span>
+          <span><span class="sw" style="background:#b388ff;"></span>Info column</span>
+          <span><span class="sw" style="background:#ffd54f;"></span>Amount</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: GUIDE -->
+      <div class="guide-panel">
+        <h3>🛠 Your widget toolbox</h3>
+        <p style="font-size:.9rem;margin-bottom:8px;">You may only use these widgets. No others. Everything you need is here.</p>
+
+        <ul class="widget-list">
+          <li>
+            <span class="wc blue">Scaffold</span>
+            <span class="desc">Root screen container. Still <strong>no AppBar</strong>.</span>
+          </li>
+          <li>
+            <span class="wc purple">Column</span>
+            <span class="desc">Outer stack: stat row, section header, then list.</span>
+          </li>
+          <li>
+            <span class="wc blue">ListView.builder</span>
+            <span class="desc">Same as Battle 6 — builds one row per item in the data list.</span>
+          </li>
+          <li>
+            <span class="wc purple">StatelessWidget</span>
+            <span class="desc"><strong>The new idea.</strong> Pull the row into its own widget class. Reuse it.</span>
+          </li>
+          <li>
+            <span class="wc green">Row</span>
+            <span class="desc">Inside your new widget. Same row shape as always: icon, info, amount.</span>
+          </li>
+          <li>
+            <span class="wc pink">Container</span>
+            <span class="desc">Cards, icon squares, stat circles.</span>
+          </li>
+          <li>
+            <span class="wc amber">Text</span>
+            <span class="desc">Everything textual — same as always.</span>
+          </li>
+          <li>
+            <span class="wc purple">SizedBox</span>
+            <span class="desc">Spacing between widgets and between children.</span>
+          </li>
+          <li>
+            <span class="wc amber">Padding</span>
+            <span class="desc">Inner spacing inside rows and around the body.</span>
+          </li>
+          <li>
+            <span class="wc teal">Icon</span>
+            <span class="desc">Stat icons and expense icons. <code>Icon(Icons.xxx)</code>.</span>
+          </li>
+        </ul>
+
+        <div class="concept-box">
+          <h4>⚡ The one new idea in this battle</h4>
+          <p><strong>Extracting a widget into its own <code>StatelessWidget</code> class.</strong> Right now your expense row is a big chunk of code that lives inside the itemBuilder. Every battle before this, you wrote widgets inline. That's fine for one-offs. But when you need to reuse a widget — or when the file gets too long — you pull it out into its own class.</p>
+          <p>Think of it like this: instead of writing "the row with icon, text, and amount" as a wall of code inside the builder, you write a class called <code>ExpenseRow</code> with a <code>build()</code> method. Then the builder just says <code>return ExpenseRow(item: expenses[i]);</code> — clean and short.</p>
+          <p>That's the entire concept. Same visuals. Same widgets. Just better organized.</p>
+        </div>
+
+        <!-- CODE PREVIEW -->
+        <h4>📎 Shape of the code (skeleton — you fill in the details)</h4>
+        <div class="code-preview"><span class="cm">// 1. data class (same idea as Battle 6)</span>
+<span class="kw">class</span> <span class="cls">Expense</span> {
+  <span class="kw">final</span> String title;
+  <span class="kw">final</span> String subtitle;
+  <span class="kw">final</span> String amount;
+  <span class="kw">final</span> <span class="kw">bool</span> isIncome;
+  <span class="cls">Expense</span>({<span class="kw">required</span> <span class="kw">this</span>.title, <span class="kw">required</span> <span class="kw">this</span>.subtitle,
+          <span class="kw">required</span> <span class="kw">this</span>.amount, <span class="kw">this</span>.isIncome = <span class="kw">false</span>});
+}
+
+<span class="cm">// 2. your own widget class — the new idea</span>
+<span class="kw">class</span> <span class="cls">ExpenseRow</span> <span class="kw">extends</span> <span class="cls">StatelessWidget</span> {
+  <span class="kw">final</span> <span class="cls">Expense</span> item;
+  <span class="kw">const</span> <span class="cls">ExpenseRow</span>({<span class="kw">super</span>.key, <span class="kw">required</span> <span class="kw">this</span>.item});
+
+  <span class="fn">@override</span>
+  <span class="cls">Widget</span> <span class="fn">build</span>(<span class="cls">BuildContext</span> context) {
+    <span class="cm">// return the Row you already know — same as Battle 6</span>
+  }
+}
+
+<span class="cm">// 3. inside the list builder</span>
+<span class="fn">ListView.builder</span>(
+  itemCount: expenses.length,
+  itemBuilder: (context, i) => <span class="cls">ExpenseRow</span>(item: expenses[i]),
+)</div>
+
+        <h4>📐 Suggested nesting</h4>
+        <p style="font-size:.85rem;margin-bottom:10px;">This is a <em>hint</em> — not the answer. You still have to write every widget yourself.</p>
+        <div class="tree">
+          <div><span class="root">Scaffold</span> <span class="comment">// no AppBar</span></div>
+          <div>└─ <span class="lvl1">Padding</span></div>
+          <div>&nbsp;&nbsp;&nbsp;└─ <span class="lvl1">Column</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="lvl2">Row</span> <span class="comment">// 3 stat cards</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(height:20)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="lvl2">Row</span> <span class="comment">// section head: title + count</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="leaf">SizedBox(height:14)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="lvl1">Expanded</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="lvl1">ListView.builder</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="lvl2">ExpenseRow(item: …)</span> <span class="comment">// ← your new widget</span></div>
+          <div>&nbsp;</div>
+          <div><span class="comment">// and separately, as its own class:</span></div>
+          <div><span class="root">ExpenseRow</span> <span class="kw">extends</span> StatelessWidget</div>
+          <div>&nbsp;&nbsp;&nbsp;└─ <span class="lvl2">Row</span> <span class="comment">// icon + info column + amount</span></div>
+        </div>
+        <p style="font-size:.8rem;color:var(--text-muted);">You don't have to match this tree exactly — any tree that produces the same visual result is correct.</p>
+
+        <h4>📋 Rules of the battle</h4>
+        <div class="rule">
+          <span class="num">1</span>
+          <span class="txt">Every widget you use must come from the toolbox above.</span>
+        </div>
+        <div class="rule">
+          <span class="num">2</span>
+          <span class="txt"><strong>No AppBar.</strong> The <code>Scaffold</code> only has a <code>body:</code>.</span>
+        </div>
+        <div class="rule">
+          <span class="num">3</span>
+          <span class="txt">The expense row must be a <strong>separate <code>StatelessWidget</code> class</strong> — not inline code inside the itemBuilder.</span>
+        </div>
+        <div class="rule">
+          <span class="num">4</span>
+          <span class="txt">Use <code>ListView.builder</code> from a <code>List</code> of expense data.</span>
+        </div>
+        <div class="rule">
+          <span class="num">5</span>
+          <span class="txt">Match the wireframe visually — three stat cards, five expense rows.</span>
+        </div>
+        <div class="rule">
+          <span class="num">6</span>
+          <span class="txt">When it matches, take a screenshot and submit. Battle Layout 8 unlocks.</span>
+        </div>
+
+        <!-- SINGLE BATTLE BUTTON -->
+        <div class="cta-row">
+          <a href="battlelayout8.html" class="btn btn-battle">
+            <svg class="ic-svg" viewBox="0 0 24 24" style="width:16px;height:16px;"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            Battle Layout 8
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- HINT -->
+    <div class="hint-box">
+      <strong>💡 Battle tip:</strong> Don't rewrite the row from scratch. In Battle 6, you already wrote the expense row inline inside the <code>itemBuilder</code>. Now just <em>copy that exact Row</em> and paste it inside the <code>build()</code> method of your new <code>ExpenseRow</code> class. Then change the hardcoded strings to <code>item.title</code>, <code>item.subtitle</code>, and <code>item.amount</code>. That's it. You moved code from one place to another and now it's reusable.
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  (function typeTitle(){
+    const el = document.getElementById('typedTitle');
+    if(!el) return;
+  })();
+</script>
+</body>
+</html>
